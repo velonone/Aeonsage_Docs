@@ -1,6 +1,11 @@
 # AeonSage Documentation
 
-This directory contains the official AeonSage documentation content, designed to be integrated into the existing website at `apps/website/`.
+> **📚 Official Documentation Repository**
+> **Repository**: [github.com/velonone/Aeonsage_Docs](https://github.com/velonone/Aeonsage_Docs)
+> **Deployed**: [docs.aeonsage.org](https://docs.aeonsage.org)
+> **License**: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
+
+This repository contains the official AeonSage documentation, built with [Mintlify](https://mintlify.com) and automatically deployed to docs.aeonsage.org.
 
 ---
 
@@ -8,62 +13,196 @@ This directory contains the official AeonSage documentation content, designed to
 
 AeonSage is a self-hosted AI orchestration platform that connects language models, messaging channels, and real-world tools. Run entirely on your infrastructure with complete control over your data.
 
+### Platform Architecture
+
+```mermaid
+graph TB
+    subgraph "User Layer"
+        U1[Telegram] --> GW
+        U2[Discord] --> GW
+        U3[WhatsApp] --> GW
+        U4[Web UI] --> GW
+    end
+
+    subgraph "AeonSage Platform"
+        GW[Gateway Server<br/>Port 18789]
+        GW --> CR[Cognitive Router<br/>OpenSage]
+        CR --> L1[Ollama<br/>Local AI]
+        CR --> L2[Claude/GPT<br/>Cloud AI]
+        CR --> L3[OpenRouter<br/>100+ Models]
+        GW --> SK[Skills Engine<br/>100+ Tools]
+    end
+
+    subgraph "Documentation"
+        DOCS[docs.aeonsage.org] -.-> GW
+    end
+
+    style DOCS fill:#F97316,stroke:#000,color:#fff
+    style GW fill:#111318,stroke:#F97316,color:#fff
+    style CR fill:#111318,stroke:#F97316,color:#fff
+```
+
 ### Editions
 
-| Edition | License | Best For |
-|---------|---------|----------|
-| **OSS** | MIT | Individuals, developers, self-hosters |
-| **Pro** | Commercial | Teams, organizations, power users |
+```mermaid
+graph LR
+    subgraph OSS["🌟 OSS Edition (MIT)"]
+        O1[Local AI<br/>Ollama/LM Studio]
+        O2[Cloud AI BYOK<br/>OpenAI/Claude/Gemini]
+        O3[27+ Channels<br/>Telegram/Discord/etc]
+        O4[100+ Skills<br/>Extensible]
+    end
 
-### OSS Repository
+    subgraph Pro["⭐ Pro Edition ($59/mo)"]
+        P1[All OSS Features]
+        P2[Cloud Relay<br/>Remote Access]
+        P3[Multi-device Sync<br/>Desktop/Mobile]
+        P4[VDID Identity<br/>Enterprise Auth]
+        P5[Team Management<br/>Advanced Analytics]
+    end
 
-The open-source repository is available at: [github.com/velonone/Aeonsage](https://github.com/velonone/Aeonsage)
+    OSS -.Upgrade.-> Pro
+
+    style OSS fill:#111318,stroke:#4ade80,color:#fff
+    style Pro fill:#111318,stroke:#F97316,color:#fff
+```
+
+**OSS Repository**: [github.com/velonone/Aeonsage](https://github.com/velonone/Aeonsage)
 
 | Feature | OSS | Pro |
 |---------|-----|-----|
-| Local AI (Ollama) | Full | Full |
-| Cloud AI (BYOK) | Full | Full |
-| All Channels (27+) | Full | Full |
-| Skills System (100+) | Full | Full |
-| Desktop App | Full | Full |
-| CLI Tools | Full | Full |
-| Cloud Relay | No | Yes |
-| Multi-device Sync | No | Yes |
-| VDID Identity | No | Yes |
-| Team Management | No | Yes |
-| Priority Support | No | Yes |
+| Local AI (Ollama) | ✅ Full | ✅ Full |
+| Cloud AI (BYOK) | ✅ Full | ✅ Full |
+| All Channels (27+) | ✅ Full | ✅ Full |
+| Skills System (100+) | ✅ Full | ✅ Full |
+| Desktop App | ✅ Full | ✅ Full |
+| CLI Tools | ✅ Full | ✅ Full |
+| Cloud Relay | ❌ No | ✅ **Yes** |
+| Multi-device Sync | ❌ No | ✅ **Yes** |
+| VDID Identity | ❌ No | ✅ **Yes** |
+| Team Management | ❌ No | ✅ **Yes** |
+| Priority Support | ❌ No | ✅ **Yes** |
 
 [Compare Plans](https://aeonsage.org/pricing)
 
 ---
 
-## Documentation Integration
+## Repository Ecosystem
 
-This documentation is **integrated into the existing website**:
+```mermaid
+graph TB
+    subgraph "GitHub Repositories"
+        OSS[velonone/Aeonsage<br/>🌟 OSS Codebase<br/>MIT License]
+        DOCS[velonone/Aeonsage_Docs<br/>📚 Documentation<br/>CC BY 4.0]
+        PRO[AeonsagePro<br/>⭐ Pro Codebase<br/>Private]
+    end
 
-- **Website**: `apps/website/` (React 19 + Three.js)
-- **Deploy URL**: https://aeonsage.org/docs
-- **No separate deployment needed**
+    subgraph "Deployment"
+        SITE[aeonsage.org<br/>Marketing Site]
+        DOCSITE[docs.aeonsage.org<br/>Mintlify Docs]
+        DASH[aeonsage.org/dashboard<br/>User Dashboard]
+    end
 
-### Integration Files
+    OSS -.Reference.-> DOCS
+    PRO -.Reference.-> DOCS
+    DOCS --> DOCSITE
 
-| File | Purpose |
-|------|---------|
-| `apps/website/src/pages/Docs.tsx` | Docs page component |
-| `apps/website/src/lib/i18n.ts` | Docs categories and articles |
+    style DOCS fill:#F97316,stroke:#000,color:#fff
+    style DOCSITE fill:#111318,stroke:#F97316,color:#fff
+    style OSS fill:#111318,stroke:#4ade80,color:#fff
+```
+
+### Integration Points
+
+| Repository | Purpose | URL |
+|------------|---------|-----|
+| **Aeonsage_Docs** | Documentation source | [github.com/velonone/Aeonsage_Docs](https://github.com/velonone/Aeonsage_Docs) |
+| **Aeonsage** | OSS codebase | [github.com/velonone/Aeonsage](https://github.com/velonone/Aeonsage) |
+| **Deployment** | Live documentation | [docs.aeonsage.org](https://docs.aeonsage.org) |
+
+### Auto-Deployment
+
+```mermaid
+sequenceDiagram
+    participant DEV as Developer
+    participant GH as GitHub (Aeonsage_Docs)
+    participant MINT as Mintlify
+    participant SITE as docs.aeonsage.org
+
+    DEV->>GH: git push main
+    GH->>MINT: Webhook trigger
+    MINT->>MINT: Build documentation
+    MINT->>SITE: Deploy (30-60s)
+    SITE-->>DEV: ✅ Live at docs.aeonsage.org
+```
 
 ---
 
 ## Documentation Structure
 
+```mermaid
+graph TB
+    ROOT[📚 docs.aeonsage.org]
+
+    ROOT --> GET[🚀 Get Started]
+    ROOT --> CONCEPTS[💡 Core Concepts]
+    ROOT --> CHAN[📱 Channels]
+    ROOT --> PROV[🤖 AI Providers]
+    ROOT --> DESK[🖥️ Desktop]
+    ROOT --> HOST[🐳 Self-Hosting]
+    ROOT --> API[⚡ API Reference]
+    ROOT --> SEC[🔒 Security]
+    ROOT --> RES[📖 Resources]
+
+    GET --> G1[introduction.mdx]
+    GET --> G2[quickstart.mdx]
+    GET --> G3[installation.mdx]
+
+    CONCEPTS --> C1[architecture.mdx]
+    CONCEPTS --> C2[gateway.mdx]
+    CONCEPTS --> C3[channels.mdx]
+    CONCEPTS --> C4[ai-providers.mdx]
+    CONCEPTS --> C5[skills.mdx]
+    CONCEPTS --> C6[workflows.mdx]
+
+    CHAN --> CH1[overview.mdx]
+    CHAN --> CH2[telegram.mdx]
+
+    PROV --> P1[ollama.mdx]
+
+    DESK --> D1[installation.mdx]
+
+    HOST --> H1[overview.mdx]
+    HOST --> H2[docker.mdx]
+
+    API --> A1[introduction.mdx]
+
+    SEC --> S1[overview.mdx]
+
+    RES --> R1[faq.mdx]
+    RES --> R2[changelog.mdx]
+
+    style ROOT fill:#F97316,stroke:#000,color:#fff
+    style GET fill:#111318,stroke:#4ade80,color:#fff
+    style CONCEPTS fill:#111318,stroke:#4ade80,color:#fff
+    style CHAN fill:#111318,stroke:#4ade80,color:#fff
+    style PROV fill:#111318,stroke:#4ade80,color:#fff
 ```
-docs-v2-new/
-├── introduction.mdx       # Homepage
-├── quickstart.mdx         # Quick start guide
-├── installation.mdx       # Installation guide
-├── changelog.mdx          # Version history
+
+### Directory Tree
+
+```
+Aeonsage_Docs/
+├── 📄 mint.json              # Mintlify configuration
+├── 📄 index.html             # Redirect to /introduction
+├── 📄 README.md              # This file
 │
-├── concepts/              # Core concepts
+├── 🚀 Get Started
+│   ├── introduction.mdx
+│   ├── quickstart.mdx
+│   └── installation.mdx
+│
+├── 💡 Core Concepts
 │   ├── architecture.mdx
 │   ├── gateway.mdx
 │   ├── channels.mdx
@@ -72,81 +211,102 @@ docs-v2-new/
 │   ├── workflows.mdx
 │   └── ecosystem.mdx
 │
-├── desktop/               # Desktop app docs
-│   ├── installation.mdx
-│   ├── interface.mdx
-│   ├── features.mdx
-│   └── local-ai.mdx
-│
-├── configuration/         # Configuration docs
+├── 📱 Channels (27+ integrations)
 │   ├── overview.mdx
-│   ├── environment.mdx
-│   └── security.mdx
+│   └── telegram.mdx
 │
-├── channels/              # Channel integration docs
+├── 🤖 AI Providers
+│   └── ollama.mdx
+│
+├── 🖥️ Desktop
+│   └── installation.mdx
+│
+├── 🐳 Self-Hosting
 │   ├── overview.mdx
-│   ├── telegram.mdx
-│   ├── discord.mdx
-│   ├── whatsapp.mdx
-│   ├── slack.mdx
-│   ├── imessage.mdx
-│   ├── signal.mdx
-│   └── all.mdx
+│   └── docker.mdx
 │
-├── providers/             # AI provider docs
+├── ⚡ API Reference
+│   └── introduction.mdx
+│
+├── 🔒 Security
 │   ├── overview.mdx
-│   ├── ollama.mdx
-│   ├── openai.mdx
-│   ├── anthropic.mdx
-│   ├── openrouter.mdx
-│   └── models.mdx
+│   └── configuration/overview.mdx
 │
-├── api-reference/         # API documentation
-│   ├── introduction.mdx
-│   ├── authentication.mdx
-│   ├── http.mdx
-│   ├── websocket.mdx
-│   └── errors.mdx
-│
-├── self-hosting/          # Self-hosting docs
-│   ├── overview.mdx
-│   ├── docker.mdx
-│   ├── kubernetes.mdx
-│   ├── monitoring.mdx
-│   └── upgrading.mdx
-│
-├── security/              # Security docs
-│   ├── overview.mdx
-│   ├── authentication.mdx
-│   ├── encryption.mdx
-│   └── audit.mdx
-│
-└── resources/             # Resources
+└── 📖 Resources
     ├── faq.mdx
-    ├── troubleshooting.mdx
-    └── glossary.mdx
+    └── changelog.mdx
 ```
 
 ---
 
-## Development
+## Development Workflow
 
-### Local Development
+```mermaid
+graph LR
+    subgraph "Local Development"
+        EDIT[Edit MDX Files] --> TEST[Test Locally]
+        TEST --> COMMIT[Git Commit]
+    end
 
-Start the website development server:
+    subgraph "CI/CD"
+        COMMIT --> PUSH[Git Push]
+        PUSH --> WEBHOOK[GitHub Webhook]
+        WEBHOOK --> BUILD[Mintlify Build]
+        BUILD --> DEPLOY[Deploy to CDN]
+    end
 
-```bash
-cd apps/website
-pnpm dev
+    subgraph "Production"
+        DEPLOY --> LIVE[docs.aeonsage.org]
+    end
+
+    style EDIT fill:#111318,stroke:#F97316,color:#fff
+    style LIVE fill:#F97316,stroke:#000,color:#fff
 ```
 
-Open http://localhost:3000/docs
+### Local Development (Optional)
 
-### Adding Documentation
+Mintlify CLI allows local preview:
 
-1. Create new `.mdx` file in appropriate directory
-2. Update `apps/website/src/lib/i18n.ts` to add navigation entry
-3. Update `apps/website/src/pages/Docs.tsx` if needed
+```bash
+# Install Mintlify CLI
+npm i -g mintlify
+
+# Start local preview
+mintlify dev
+```
+
+Open http://localhost:3000
+
+### Adding New Documentation
+
+1. **Create MDX file** in appropriate directory
+   ```bash
+   # Example: Add new channel guide
+   touch channels/whatsapp.mdx
+   ```
+
+2. **Update mint.json** navigation
+   ```json
+   {
+     "group": "Channels",
+     "pages": [
+       "channels/overview",
+       "channels/telegram",
+       "channels/whatsapp"  // ← Add here
+     ]
+   }
+   ```
+
+3. **Commit and push**
+   ```bash
+   git add .
+   git commit -m "docs: add WhatsApp channel guide"
+   git push origin main
+   ```
+
+4. **Auto-deploy** (30-60 seconds)
+   - Mintlify automatically builds and deploys
+   - Check https://docs.aeonsage.org
 
 ---
 
