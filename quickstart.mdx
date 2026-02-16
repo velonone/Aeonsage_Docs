@@ -1,0 +1,271 @@
+---
+title: "Quickstart"
+description: "Get AeonSage running in under 5 minutes."
+---
+
+Get your AI agent running in under 5 minutes. Choose your preferred installation method below.
+
+---
+
+## Prerequisites
+
+<Checklist>
+  <Item status="required">Node.js 22+ (for CLI installation)</Item>
+  <Item status="required">4GB RAM minimum (8GB for local models)</Item>
+  <Item status="optional">AI provider API key (OpenAI, Anthropic) OR Ollama for local models</Item>
+</Checklist>
+
+---
+
+## Choose Your Path
+
+<Tabs>
+  <Tab title="Desktop App">
+    
+    <div className="install-section">
+      <h4>Download for Your Platform</h4>
+      
+      <DownloadCards>
+        <DownloadCard 
+          platform="macOS"
+          links={[
+            { label: "Apple Silicon (M1/M2/M3)", url: "https://aeonsage.org/downloads/AeonSage-arm64.dmg" },
+            { label: "Intel Mac", url: "https://aeonsage.org/downloads/AeonSage-x64.dmg" }
+          ]}
+        />
+        <DownloadCard 
+          platform="Windows"
+          links={[
+            { label: "Windows 10/11", url: "https://aeonsage.org/downloads/AeonSage-win.exe" }
+          ]}
+        />
+        <DownloadCard 
+          platform="Linux"
+          links={[
+            { label: ".deb (Debian/Ubuntu)", url: "https://aeonsage.org/downloads/aeonsage_latest_amd64.deb" },
+            { label: ".rpm (RHEL/Fedora)", url: "https://aeonsage.org/downloads/aeonsage_latest_x86_64.rpm" },
+            { label: "AppImage", url: "https://aeonsage.org/downloads/AeonSage-latest-x86_64.AppImage" }
+          ]}
+        />
+      </DownloadCards>
+      
+      <Steps>
+        <Step number={1} title="Install">
+          <p><strong>macOS:</strong> Open DMG, drag to Applications</p>
+          <p><strong>Windows:</strong> Run installer, complete wizard</p>
+          <p><strong>Linux:</strong> <code>sudo dpkg -i aeonsage_*.deb</code></p>
+        </Step>
+        
+        <Step number={2} title="Configure">
+          <p>On first launch, add your AI provider credentials:</p>
+          <ul>
+            <li>OpenAI API key, or</li>
+            <li>Anthropic API key, or</li>
+            <li>Use Ollama for local models</li>
+          </ul>
+        </Step>
+        
+        <Step number={3} title="Start Chatting">
+          <p>Type your first message and experience AeonSage.</p>
+        </Step>
+      </Steps>
+    </div>
+    
+  </Tab>
+  
+  <Tab title="CLI">
+    
+    <div className="install-section">
+      <h4>Install via Package Manager</h4>
+      
+      <CodeTabs>
+        <CodeTab label="pnpm (Recommended)">
+          ```bash
+          pnpm add -g aeonsage
+          ```
+        </CodeTab>
+        
+        <CodeTab label="npm">
+          ```bash
+          npm install -g aeonsage
+          ```
+        </CodeTab>
+        
+        <CodeTab label="yarn">
+          ```bash
+          yarn global add aeonsage
+          ```
+        </CodeTab>
+      </CodeTabs>
+      
+      <h4>Initialize and Start</h4>
+      
+      ```bash
+      # Initialize configuration
+      aeonsage init
+      
+      # Start the Gateway
+      aeonsage gateway start
+      
+      # Gateway is now running
+      ```
+      
+      <Output>
+        ```
+        [INFO] AeonSage Gateway v2026.2.15
+        [INFO] Listening on http://127.0.0.1:GATEWAY_PORT
+        [INFO] Admin token generated
+        [INFO] Dashboard: http://localhost:GATEWAY_PORT
+        ```
+      </Output>
+      
+      <div className="next-step">
+        <p>Open your browser to the dashboard URL shown in the output.</p>
+      </div>
+    </div>
+    
+  </Tab>
+  
+  <Tab title="Docker">
+    
+    <div className="install-section">
+      <h4>Run with Docker</h4>
+      
+      ```bash
+      docker run -d \
+        --name aeonsage-gateway \
+        -p GATEWAY_PORT:GATEWAY_PORT \
+        -v aeonsage-data:/root/.aeonsage \
+        -e GATEWAY_TOKEN=your-secure-token \
+        -e OPENAI_API_KEY=your-key \
+        aeonsage/gateway:latest
+      ```
+      
+      <h4>Or use Docker Compose</h4>
+      
+      Create <code>docker-compose.yml</code>:
+      
+      ```yaml
+      version: '3.8'
+      services:
+        aeonsage:
+          image: aeonsage/gateway:latest
+          ports:
+            - "GATEWAY_PORT:GATEWAY_PORT"
+          environment:
+            - GATEWAY_TOKEN=${GATEWAY_TOKEN}
+            - OPENAI_API_KEY=${OPENAI_API_KEY}
+          volumes:
+            - ./config:/root/.aeonsage
+      ```
+      
+      ```bash
+      docker-compose up -d
+      ```
+      
+      <VerifyBadge status="success">
+        Gateway running at http://localhost:GATEWAY_PORT
+      </VerifyBadge>
+    </div>
+    
+  </Tab>
+</Tabs>
+
+---
+
+## Configure AI Provider
+
+<div className="provider-grid">
+  <ProviderCard 
+    name="OpenAI"
+    recommended={true}
+    setupTime="1 min"
+  >
+    <p>Get your API key from <a href="https://platform.openai.com/api-keys">OpenAI Platform</a></p>
+    <code>export OPENAI_API_KEY=sk-your-key</code>
+  </ProviderCard>
+  
+  <ProviderCard 
+    name="Anthropic"
+    recommended={true}
+    setupTime="1 min"
+  >
+    <p>Get your API key from <a href="https://console.anthropic.com/">Anthropic Console</a></p>
+    <code>export ANTHROPIC_API_KEY=sk-ant-your-key</code>
+  </ProviderCard>
+  
+  <ProviderCard 
+    name="Ollama"
+    recommended={false}
+    setupTime="3 min"
+    badge="100% Local"
+  >
+    <p>Run models locally on your hardware:</p>
+    <code>curl -fsSL https://ollama.ai/install.sh | sh && ollama pull llama3.2</code>
+  </ProviderCard>
+</div>
+
+---
+
+## Verify Installation
+
+<CommandBlock>
+  ```bash
+  aeonsage --version
+  aeonsage gateway status
+  ```
+</CommandBlock>
+
+<ExpectedOutput>
+  ```json
+  {
+    "status": "ok",
+    "version": "2026.2.15",
+    "channels": ["telegram", "discord"],
+    "providers": ["openai", "ollama"]
+  }
+  ```
+</ExpectedOutput>
+
+---
+
+## Next Steps
+
+<CardGroup cols={3}>
+  <Card title="Add a Channel" icon="plug" href="/channels/overview">
+    <p>Connect Telegram, Discord, or WhatsApp</p>
+    <p><strong>2 minutes</strong></p>
+  </Card>
+  
+  <Card title="Explore Features" icon="compass" href="/concepts/skills">
+    <p>Discover skills and automation</p>
+    <p><strong>5 minutes</strong></p>
+  </Card>
+  
+  <Card title="Go to Production" icon="rocket" href="/self-hosting/overview">
+    <p>Deploy for scale</p>
+    <p><strong>15 minutes</strong></p>
+  </Card>
+</CardGroup>
+
+---
+
+## Need Help?
+
+<div className="support-grid">
+  <SupportLink icon="discord" title="Discord" href="https://discord.gg/aeonsage">
+    Join 5,000+ community members
+  </SupportLink>
+  
+  <SupportLink icon="book" title="Documentation" href="/introduction">
+    Read the full docs
+  </SupportLink>
+  
+  <SupportLink icon="mail" title="Support" href="mailto:support@aeonsage.org">
+    Contact our team
+  </SupportLink>
+</div>
+
+<InfoBox type="tip" title="Pro Tip">
+  Use <code>aeonsage --help</code> to see all available commands. The CLI is your gateway to full control.
+</InfoBox>

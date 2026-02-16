@@ -1,0 +1,489 @@
+---
+title: "Workflows"
+description: "Visual workflow automation with Canvas-style flowcharts."
+---
+
+# Workflows
+
+<div className="intro">
+Workflows enable you to build complex automation through an intuitive Canvas-style visual interface. Drag, connect, and configure nodes to create powerful AI-driven processes.
+</div>
+
+---
+
+## Overview
+
+AeonSage Workflows provide a visual, node-based approach to automation:
+
+<WorkflowFeatures>
+  <Feature icon="drag">Drag-and-drop canvas interface</Feature>
+  <Feature icon="connect">Connect nodes to define flow logic</Feature>
+  <Feature icon="configure">Configure each node with visual forms</Feature>
+  <Feature icon="debug">Real-time execution visualization</Feature>
+  <Feature icon="share">Share and version workflows as code</Feature>
+</WorkflowFeatures>
+
+---
+
+## Canvas Interface
+
+### Visual Flow Builder
+
+<CanvasPreview>
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Workflow Canvas                                                              │
+│                                                                              │
+│    ┌─────────┐        ┌─────────┐        ┌─────────┐                       │
+│    │ Trigger │───────▶│  Action │───────▶│  Output │                       │
+│    │         │        │         │        │         │                       │
+│    │ Message │        │ AI Call │        │  Reply  │                       │
+│    │ Received│        │ GPT-4o  │        │ Channel │                       │
+│    └─────────┘        └─────────┘        └─────────┘                       │
+│         │                   │                                                │
+│         │              ┌────▼────┐                                          │
+│         │              │ Condition│                                         │
+│         │              │  Check   │                                         │
+│         │              └────┬────┘                                          │
+│         │                   │                                                │
+│         ▼              ┌────▼────┐     ┌─────────┐                          │
+│    ┌─────────┐         │  True   │────▶│  Skill  │                          │
+│    │  Log    │         │  Path   │     │  Web    │                          │
+│    │ Event   │         └─────────┘     └─────────┘                          │
+│    └─────────┘                                                                │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+</CanvasPreview>
+
+### Canvas Components
+
+<CanvasComponentGrid>
+  <Component type="trigger" name="Triggers">
+    <p>Events that start a workflow</p>
+    <Examples examples={["Message Received", "Schedule", "Webhook", "Manual"]} />
+  </Component>
+  
+  <Component type="action" name="Actions">
+    <p>Operations performed in the flow</p>
+    <Examples examples={["AI Call", "Send Message", "Run Skill", "HTTP Request"]} />
+  </Component>
+  
+  <Component type="logic" name="Logic">
+    <p>Control flow and branching</p>
+    <Examples examples={["Condition", "Switch", "Loop", "Parallel"]} />
+  </Component>
+  
+  <Component type="output" name="Outputs">
+    <p>Results and responses</p>
+    <Examples examples={["Reply", "Store", "Notify", "Transform"]} />
+  </Component>
+</CanvasComponentGrid>
+
+---
+
+## Node Types
+
+### Trigger Nodes
+
+<NodeLibrary category="triggers">
+  <Node name="Message Received" icon="message">
+    <p>Fires when a message arrives on configured channels</p>
+    <Config>
+      <Field name="channels" type="multi-select" options={["Telegram", "Discord", "WhatsApp"]} />
+      <Field name="filter" type="expression" placeholder="message.text.startsWith('!')" />
+    </Config>
+  </Node>
+  
+  <Node name="Schedule" icon="clock">
+    <p>Fires on a time-based schedule</p>
+    <Config>
+      <Field name="cron" type="cron" placeholder="0 9 * * *" />
+      <Field name="timezone" type="select" options={["UTC", "Local"]} />
+    </Config>
+  </Node>
+  
+  <Node name="Webhook" icon="webhook">
+    <p>Fires when external service calls the webhook URL</p>
+    <Config>
+      <Field name="method" type="select" options={["GET", "POST"]} />
+      <Field name="auth" type="boolean" />
+    </Config>
+  </Node>
+</NodeLibrary>
+
+### Action Nodes
+
+<NodeLibrary category="actions">
+  <Node name="AI Call" icon="brain">
+    <p>Call an AI model with a prompt</p>
+    <Config>
+      <Field name="provider" type="select" options={["OpenAI", "Anthropic", "Ollama"]} />
+      <Field name="model" type="select" dynamic={true} />
+      <Field name="prompt" type="template" multiline={true} />
+      <Field name="temperature" type="slider" min={0} max={2} step={0.1} />
+    </Config>
+  </Node>
+  
+  <Node name="Run Skill" icon="puzzle">
+    <p>Execute a skill action</p>
+    <Config>
+      <Field name="skill" type="select" dynamic={true} />
+      <Field name="action" type="select" dynamic={true} />
+      <Field name="params" type="json" />
+    </Config>
+  </Node>
+  
+  <Node name="HTTP Request" icon="globe">
+    <p>Make an HTTP request to external API</p>
+    <Config>
+      <Field name="method" type="select" options={["GET", "POST", "PUT", "DELETE"]} />
+      <Field name="url" type="text" />
+      <Field name="headers" type="json" />
+      <Field name="body" type="json" />
+    </Config>
+  </Node>
+</NodeLibrary>
+
+### Logic Nodes
+
+<NodeLibrary category="logic">
+  <Node name="Condition" icon="branch">
+    <p>Branch based on a condition</p>
+    <Config>
+      <Field name="expression" type="expression" />
+      <Output name="true" color="#22c55e" />
+      <Output name="false" color="#ef4444" />
+    </Config>
+  </Node>
+  
+  <Node name="Switch" icon="fork">
+    <p>Multiple branch selection</p>
+    <Config>
+      <Field name="expression" type="expression" />
+      <Field name="cases" type="array" />
+    </Config>
+  </Node>
+  
+  <Node name="Parallel" icon="parallel">
+    <p>Execute multiple branches simultaneously</p>
+    <Config>
+      <Field name="branches" type="number" min={2} max={10} />
+    </Config>
+  </Node>
+  
+  <Node name="Loop" icon="loop">
+    <p>Iterate over array items</p>
+    <Config>
+      <Field name="array" type="expression" />
+      <Field name="maxIterations" type="number" />
+    </Config>
+  </Node>
+</NodeLibrary>
+
+---
+
+## Example Workflows
+
+### 1. Simple Q&A Bot
+
+<WorkflowExample name="Simple Q&A">
+  <FlowDiagram>
+    <Step type="trigger" name="Message Received" x={50} y={100} />
+    <Connection from="trigger" to="condition" />
+    
+    <Step type="logic" name="Is Question?" x={200} y={100}>
+      <Expression>message.text.includes('?')</Expression>
+    </Step>
+    <Connection from="condition" to="ai" label="Yes" />
+    <Connection from="condition" to="ignore" label="No" />
+    
+    <Step type="action" name="AI Response" x={350} y={50}>
+      <Provider>OpenAI GPT-4o</Provider>
+      <Prompt>Answer: {{message.text}}</Prompt>
+    </Step>
+    <Connection from="ai" to="reply" />
+    
+    <Step type="output" name="Send Reply" x={500} y={50} />
+    
+    <Step type="output" name="Ignore" x={350} y={150} />
+  </FlowDiagram>
+  
+  <WorkflowStats>
+    <Stat label="Nodes" value={4} />
+    <Stat label="Avg Latency" value="1.2s" />
+    <Stat label="Success Rate" value="99.5%" />
+  </WorkflowStats>
+</WorkflowExample>
+
+### 2. Multi-Channel Notification
+
+<WorkflowExample name="Multi-Channel Alert">
+  <FlowDiagram>
+    <Step type="trigger" name="Webhook" x={50} y={100} />
+    <Connection from="trigger" to="transform" />
+    
+    <Step type="action" name="Transform Data" x={200} y={100}>
+      <Template>alert: {{body.message}}</Template>
+    </Step>
+    <Connection from="transform" to="parallel" />
+    
+    <Step type="logic" name="Parallel Send" x={350} y={100}>
+      <Branches>3</Branches>
+    </Step>
+    
+    <Connection from="parallel" to="telegram" branch={0} />
+    <Connection from="parallel" to="discord" branch={1} />
+    <Connection from="parallel" to="slack" branch={2} />
+    
+    <Step type="output" name="Telegram" x={500} y={30} />
+    <Step type="output" name="Discord" x={500} y={100} />
+    <Step type="output" name="Slack" x={500} y={170} />
+  </FlowDiagram>
+  
+  <WorkflowStats>
+    <Stat label="Nodes" value={5} />
+    <Stat label="Avg Latency" value="0.8s" />
+    <Stat label="Success Rate" value="99.9%" />
+  </WorkflowStats>
+</WorkflowExample>
+
+### 3. AI Research Assistant
+
+<WorkflowExample name="Research Pipeline">
+  <FlowDiagram>
+    <Step type="trigger" name="Message: !research" x={50} y={150} />
+    <Connection from="trigger" to="web" />
+    
+    <Step type="action" name="Web Search" x={180} y={150} />
+    <Connection from="web" to="extract" />
+    
+    <Step type="action" name="Extract Content" x={310} y={150} />
+    <Connection from="extract" to="loop" />
+    
+    <Step type="logic" name="Loop Sources" x={440} y={150}>
+      <MaxIterations>5</MaxIterations>
+    </Step>
+    <Connection from="loop" to="summarize" />
+    
+    <Step type="action" name="Summarize" x={570} y={150}>
+      <Model>Claude 3.5 Sonnet</Model>
+    </Step>
+    <Connection from="summarize" to="loop" label="next" />
+    <Connection from="summarize" to="compile" label="done" />
+    
+    <Step type="action" name="Compile Report" x={700} y={150} />
+    <Connection from="compile" to="reply" />
+    
+    <Step type="output" name="Send Report" x={830} y={150} />
+  </FlowDiagram>
+  
+  <WorkflowStats>
+    <Stat label="Nodes" value={7} />
+    <Stat label="Avg Latency" value="15s" />
+    <Stat label="Success Rate" value="97%" />
+  </WorkflowStats>
+</WorkflowExample>
+
+---
+
+## Performance Metrics
+
+### Workflow Execution Analysis
+
+<PerformanceChart>
+  <LineChart
+    title="Workflow Execution Time Distribution"
+    xAxis="Workflows"
+    yAxis="Time (ms)"
+    series={[
+      { name: "Simple Q&A", data: [800, 1200, 1500, 2000], color: "#22c55e" },
+      { name: "Multi-Channel", data: [500, 800, 1200, 1500], color: "#3b82f6" },
+      { name: "Research", data: [10000, 15000, 20000, 25000], color: "#8b5cf6" },
+    ]}
+    xLabels={["P25", "P50", "P75", "P99"]}
+  />
+</PerformanceChart>
+
+### Resource Usage
+
+<ResourceUsageTable>
+  <thead>
+    <tr>
+      <th>Workflow</th>
+      <th>CPU</th>
+      <th>Memory</th>
+      <th>AI Tokens</th>
+      <th>Cost/Run</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Simple Q&A</td>
+      <td>5%</td>
+      <td>50MB</td>
+      <td>~500</td>
+      <td>$0.01</td>
+    </tr>
+    <tr>
+      <td>Multi-Channel</td>
+      <td>10%</td>
+      <td>80MB</td>
+      <td>~200</td>
+      <td>$0.005</td>
+    </tr>
+    <tr>
+      <td>Research Pipeline</td>
+      <td>25%</td>
+      <td>200MB</td>
+      <td>~5000</td>
+      <td>$0.10</td>
+    </tr>
+  </tbody>
+</ResourceUsageTable>
+
+---
+
+## Plugin Integration
+
+### Custom Node Plugins
+
+Create custom workflow nodes through plugins:
+
+<PluginStructure>
+  <Directory name="workflow-plugin">
+    <File name="plugin.json">
+      {`{
+  "name": "my-custom-nodes",
+  "version": "1.0.0",
+  "nodes": ["custom-action", "custom-trigger"]
+}`}
+    </File>
+    <Directory name="nodes">
+      <File name="custom-action.ts">
+        {`import { defineNode } from '@aeonsage/workflow-sdk';
+
+export default defineNode({
+  type: 'action',
+  name: 'Custom Action',
+  inputs: ['input'],
+  outputs: ['output'],
+  config: {
+    // Node configuration schema
+  },
+  execute: async (context, config) => {
+    // Custom logic here
+    return { output: result };
+  }
+});`}
+      </File>
+    </Directory>
+  </Directory>
+</PluginStructure>
+
+### Available SDKs
+
+<SDKGrid>
+  <SDK name="Workflow SDK" package="@aeonsage/workflow-sdk">
+    <p>Build custom nodes and actions</p>
+    <Version>2.1.0</Version>
+  </SDK>
+  
+  <SDK name="Canvas Components" package="@aeonsage/canvas-components">
+    <p>UI components for custom editors</p>
+    <Version>1.5.0</Version>
+  </SDK>
+  
+  <SDK name="Expression Language" package="@aeonsage/expr">
+    <p>Expression parsing and evaluation</p>
+    <Version>3.0.0</Version>
+  </SDK>
+</SDKGrid>
+
+---
+
+## Workflow as Code
+
+### Export and Version
+
+```yaml
+# workflow.yaml
+name: "Customer Support Bot"
+version: "1.2.0"
+trigger:
+  type: message
+  filter: "channel === 'telegram'"
+  
+nodes:
+  - id: classify
+    type: ai_call
+    provider: openai
+    model: gpt-4o-mini
+    prompt: |
+      Classify this message: {{message.text}}
+      Categories: question, complaint, feedback
+      
+  - id: route
+    type: switch
+    expression: "{{classify.category}}"
+    cases:
+      question: handle_question
+      complaint: handle_complaint
+      feedback: handle_feedback
+      
+  - id: handle_question
+    type: ai_call
+    provider: openai
+    model: gpt-4o
+    prompt: "Answer: {{message.text}}"
+    
+  - id: handle_complaint
+    type: parallel
+    branches:
+      - notify_team
+      - acknowledge
+      
+connections:
+  - from: trigger
+    to: classify
+  - from: classify
+    to: route
+  - from: route.handle_question
+    to: handle_question
+```
+
+---
+
+## Best Practices
+
+<BestPracticesGrid>
+  <Practice title="Keep Workflows Focused">
+    <p>Each workflow should have a single, clear purpose. Split complex workflows into smaller, reusable ones.</p>
+  </Practice>
+  
+  <Practice title="Handle Errors Gracefully">
+    <p>Add error handling branches to catch failures and provide fallback responses.</p>
+  </Practice>
+  
+  <Practice title="Use Variables Wisely">
+    <p>Store intermediate results in variables to avoid redundant AI calls.</p>
+  </Practice>
+  
+  <Practice title="Test Thoroughly">
+    <p>Use the debug mode to test workflows step-by-step before deployment.</p>
+  </Practice>
+</BestPracticesGrid>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Create Your First Workflow" icon="plus" href="/workflows/create">
+    <p>Step-by-step guide to building workflows.</p>
+  </Card>
+  
+  <Card title="Node Reference" icon="book" href="/api-reference/workflow-nodes">
+    <p>Complete reference for all node types.</p>
+  </Card>
+</CardGroup>

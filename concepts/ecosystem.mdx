@@ -1,0 +1,381 @@
+---
+title: "Ecosystem"
+description: "AeonSage ecosystem partners and integrated platforms."
+---
+
+<div className="intro">
+AeonSage integrates with industry-leading AI providers, messaging platforms, and authentication systems. Our ecosystem is built on partnerships that prioritize security, reliability, and innovation.
+</div>
+
+---
+
+## Strategic Partners
+
+<PartnerGrid cols={2}>
+  <PartnerCard 
+    name="VDID"
+    logo="/logos/vdid-logo.svg"
+    type="Authentication"
+    description="Decentralized identity verification for secure, privacy-preserving authentication."
+    features={[
+      "Zero-knowledge proof authentication",
+      "Decentralized identity management",
+      "Cross-platform SSO support",
+      "GDPR/CCPA compliant"
+    ]}
+    link="https://vdid.io"
+  />
+  
+  <PartnerCard 
+    name="OpenSage"
+    logo="/logos/opensage-logo.svg"
+    type="Cognitive Router"
+    description="Intelligent AI model routing for optimal cost-performance balance."
+    features={[
+      "Multi-provider failover",
+      "Cost optimization (40-60% savings)",
+      "Latency-aware routing",
+      "Model capability matching"
+    ]}
+    link="https://opensage.ai"
+  />
+</PartnerGrid>
+
+---
+
+## AI Provider Ecosystem
+
+### Cloud AI Providers
+
+<ProviderEcosystem>
+  <ProviderPartner 
+    name="OpenAI"
+    icon="si:openai"
+    color="#10a37f"
+    models={["GPT-4o", "GPT-4 Turbo", "GPT-3.5", "o1", "DALL-E 3"]}
+    features={["Streaming", "Vision", "Function Calling", "JSON Mode"]}
+    status="production"
+  />
+  
+  <ProviderPartner 
+    name="Anthropic"
+    icon="si:anthropic"
+    color="#d4a574"
+    models={["Claude 4", "Claude 3.5 Sonnet", "Claude 3 Opus", "Claude 3 Haiku"]}
+    features={["Extended Context", "Vision", "Tool Use", "Artifacts"]}
+    status="production"
+  />
+  
+  <ProviderPartner 
+    name="Google AI"
+    icon="si:google"
+    color="#4285f4"
+    models={["Gemini 2.0 Flash", "Gemini 1.5 Pro", "Gemini 1.5 Flash"]}
+    features={["Multimodal", "Long Context", "Code Execution"]}
+    status="production"
+  />
+  
+  <ProviderPartner 
+    name="Mistral AI"
+    icon="si:mistral"
+    color="#ff7000"
+    models={["Mistral Large", "Mistral Medium", "Codestral"]}
+    features={["European Hosting", "Function Calling", "Embeddings"]}
+    status="production"
+  />
+  
+  <ProviderPartner 
+    name="Groq"
+    icon="si:groq"
+    color="#f55036"
+    models={["Llama 3.3 70B", "Mixtral 8x7B", "Whisper"]}
+    features={["Ultra-fast Inference", "Real-time Processing"]}
+    status="production"
+  />
+</ProviderEcosystem>
+
+### Model Aggregators
+
+<AggregatorEcosystem>
+  <AggregatorPartner 
+    name="OpenRouter"
+    icon="si:openrouter"
+    color="#8b5cf6"
+    description="Access 100+ models through a single API with automatic fallbacks."
+    modelCount="100+"
+    features={["Unified API", "Auto-fallback", "Cost Optimization", "BYOK"]}
+    status="production"
+    recommended={true}
+  />
+  
+  <AggregatorPartner 
+    name="Together AI"
+    icon="si:together"
+    color="#0066ff"
+    description="Serverless open-source model inference with fine-tuning support."
+    modelCount="50+"
+    features={["Fast Inference", "Fine-tuning", "Open Source Models"]}
+    status="production"
+  />
+</AggregatorEcosystem>
+
+### Local AI Providers
+
+<LocalEcosystem>
+  <LocalPartner 
+    name="Ollama"
+    icon="si:ollama"
+    color="#ffffff"
+    models={["Llama 3.2", "Mistral", "Qwen 2.5", "Phi 3", "Gemma 2"]}
+    features={["100% Local", "Privacy-first", "GPU Acceleration", "Model Library"]}
+    link="/providers/ollama"
+  />
+  
+  <LocalPartner 
+    name="LM Studio"
+    icon="si:lmstudio"
+    color="#ffffff"
+    models={["All GGUF Models"]}
+    features={["GUI Interface", "OpenAI Compatible", "GPU/CPU Switching"]}
+    status="beta"
+  />
+  
+  <LocalPartner 
+    name="vLLM"
+    icon="si:vllm"
+    color="#ffffff"
+    models={["Any HuggingFace Model"]}
+    features={["High Performance", "Paged Attention", "Continuous Batching"]}
+    status="production"
+  />
+</LocalEcosystem>
+
+---
+
+## Messaging Channels
+
+### Primary Channels
+
+<ChannelEcosystem>
+  <ChannelPartner 
+    name="Telegram"
+    icon="si:telegram"
+    color="#26a5e4"
+    users="900M+"
+    features={["Bot API", "Groups", "Channels", "Voice", "Files"]}
+    link="/channels/telegram"
+  />
+  
+  <ChannelPartner 
+    name="Discord"
+    icon="si:discord"
+    color="#5865f2"
+    users="500M+"
+    features={["Slash Commands", "Threads", "Voice", "Embeds", "Components"]}
+    link="/channels/discord"
+  />
+  
+  <ChannelPartner 
+    name="WhatsApp"
+    icon="si:whatsapp"
+    color="#25d366"
+    users="2B+"
+    features={["Business API", "Media", "Voice Notes", "Location"]}
+    link="/channels/whatsapp"
+  />
+  
+  <ChannelPartner 
+    name="Slack"
+    icon="si:slack"
+    color="#4a154b"
+    users="30M+"
+    features={["Workspaces", "Channels", "Threads", "App Directory"]}
+    link="/channels/slack"
+  />
+  
+  <ChannelPartner 
+    name="Signal"
+    icon="si:signal"
+    color="#3b82f6"
+    users="100M+"
+    features={["E2E Encryption", "Groups", "Voice", "Privacy-first"]}
+    link="/channels/signal"
+  />
+  
+  <ChannelPartner 
+    name="iMessage"
+    icon="si:imessage"
+    color="#34c759"
+    users="1B+"
+    features={["BlueBubbles", "Mac Integration", "Rich Media"]}
+    link="/channels/imessage"
+  />
+</ChannelEcosystem>
+
+### Extension Channels
+
+<ExtensionEcosystem>
+  <ExtensionPartner name="Microsoft Teams" icon="si:msteams" color="#6264a7" />
+  <ExtensionPartner name="Matrix" icon="si:matrix" color="#000000" />
+  <ExtensionPartner name="Zalo" icon="si:zalo" color="#0068ff" />
+  <ExtensionPartner name="Twitter/X" icon="si:x" color="#000000" />
+  <ExtensionPartner name="Voice Calls" icon="si:voip" color="#6366f1" />
+</ExtensionEcosystem>
+
+---
+
+## Authentication Providers
+
+<AuthEcosystem>
+  <AuthProvider 
+    name="VDID"
+    logo="/logos/vdid-logo.svg"
+    type="Decentralized Identity"
+    features={["Zero-knowledge Proof", "No Password", "Privacy-preserving", "Cross-platform"]}
+    recommended={true}
+  />
+  
+  <AuthProvider 
+    name="Google"
+    icon="si:google"
+    color="#4285f4"
+    type="OAuth 2.0"
+    features={["OAuth 2.0", "SSO", "Workspace Integration"]}
+  />
+  
+  <AuthProvider 
+    name="GitHub"
+    icon="si:github"
+    color="#ffffff"
+    type="OAuth 2.0"
+    features={["OAuth 2.0", "Developer-friendly", "Team Sync"]}
+  />
+  
+  <AuthProvider 
+    name="Telegram"
+    icon="si:telegram"
+    color="#26a5e4"
+    type="OAuth 2.0"
+    features={["Login Widget", "Phone Verification", "Fast Setup"]}
+  />
+  
+  <AuthProvider 
+    name="Email"
+    icon="si:email"
+    color="#6b7280"
+    type="Password/OTP"
+    features={["Magic Link", "OTP", "Password Reset"]}
+  />
+</AuthEcosystem>
+
+---
+
+## Technology Stack
+
+### Frontend Technologies
+
+<TechStack>
+  <TechPartner name="React" icon="si:react" color="#61dafb" version="19" />
+  <TechPartner name="TypeScript" icon="si:typescript" color="#3178c6" version="5.x" />
+  <TechPartner name="Tauri" icon="si:tauri" color="#ffc131" version="2.x" />
+  <TechPartner name="Vite" icon="si:vite" color="#646cff" version="6.x" />
+  <TechPartner name="Lit" icon="si:lit" color="#325ccc" version="3.x" />
+  <TechPartner name="Three.js" icon="si:threejs" color="#000000" version="r170" />
+</TechStack>
+
+### Backend Technologies
+
+<TechStack>
+  <TechPartner name="Node.js" icon="si:nodedotjs" color="#339933" version="22+" />
+  <TechPartner name="Bun" icon="si:bun" color="#000000" version="1.x" />
+  <TechPartner name="PostgreSQL" icon="si:postgresql" color="#4169e1" version="16" />
+  <TechPartner name="SQLite" icon="si:sqlite" color="#003b57" version="3.45" />
+  <TechPartner name="Redis" icon="si:redis" color="#dc382d" version="7.x" />
+  <TechPartner name="Docker" icon="si:docker" color="#2496ed" version="24+" />
+</TechStack>
+
+### AI/ML Technologies
+
+<TechStack>
+  <TechPartner name="LangChain" icon="si:langchain" color="#1c3c3c" version="0.3" />
+  <TechPartner name="Prisma" icon="si:prisma" color="#2d3748" version="6.x" />
+  <TechPartner name="OpenAI API" icon="si:openai" color="#10a37f" version="v2" />
+  <TechPartner name="Anthropic API" icon="si:anthropic" color="#d4a574" version="v4" />
+</TechStack>
+
+---
+
+## Integration Statistics
+
+<StatsGrid cols={4}>
+  <StatCard value="27+" label="Channels" sublabel="Messaging platforms" />
+  <StatCard value="20+" label="AI Providers" sublabel="Cloud and local" />
+  <StatCard value="100+" label="Skills" sublabel="Available modules" />
+  <StatCard value="5" label="Auth Methods" sublabel="Including VDID" />
+</StatsGrid>
+
+### Provider Adoption
+
+<BarChart 
+  title="Provider Usage Distribution"
+  data={[
+    { label: "OpenAI", value: 35, color: "#10a37f" },
+    { label: "Anthropic", value: 25, color: "#d4a574" },
+    { label: "OpenRouter", value: 20, color: "#8b5cf6" },
+    { label: "Ollama (Local)", value: 12, color: "#ffffff" },
+    { label: "Google", value: 5, color: "#4285f4" },
+    { label: "Others", value: 3, color: "#6b7280" },
+  ]}
+  xAxis="Usage %"
+/>
+
+### Channel Popularity
+
+<DonutChart 
+  title="Message Volume by Channel"
+  data={[
+    { label: "Telegram", value: 40, color: "#26a5e4" },
+    { label: "Discord", value: 30, color: "#5865f2" },
+    { label: "WhatsApp", value: 15, color: "#25d366" },
+    { label: "Slack", value: 8, color: "#4a154b" },
+    { label: "Others", value: 7, color: "#6b7280" },
+  ]}
+/>
+
+---
+
+## Become a Partner
+
+AeonSage is always looking to expand our ecosystem with quality integrations.
+
+<PartnershipCTA>
+  <CTACard 
+    title="Channel Partners"
+    description="Integrate your messaging platform with AeonSage"
+    link="mailto:partners@aeonsage.org"
+  />
+  <CTACard 
+    title="AI Provider Partners"
+    description="Add your AI models to our provider ecosystem"
+    link="mailto:partners@aeonsage.org"
+  />
+  <CTACard 
+    title="Technology Partners"
+    description="Integrate your tools and services"
+    link="mailto:partners@aeonsage.org"
+  />
+</PartnershipCTA>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="AI Providers" icon="cpu" href="/concepts/ai-providers">
+    <p>Configure AI model providers for your deployment.</p>
+  </Card>
+  
+  <Card title="Channels" icon="plug" href="/concepts/channels">
+    <p>Connect messaging channels to your agent.</p>
+  </Card>
+</CardGroup>

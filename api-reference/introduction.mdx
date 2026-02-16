@@ -1,0 +1,222 @@
+---
+title: "API Reference"
+description: "Integrate with the AeonSage Gateway API."
+---
+
+# API Reference
+
+Programmatically interact with AeonSage through HTTP and WebSocket APIs.
+
+## Overview
+
+The Gateway exposes two API interfaces:
+
+| API | Use Case |
+|-----|----------|
+| **HTTP REST** | Configuration, management, simple queries |
+| **WebSocket** | Real-time chat, streaming, events |
+
+### Base URL
+
+```
+https://your-gateway.example.com
+```
+
+In production, replace with your Gateway's URL.
+
+### Authentication
+
+All API requests require authentication:
+
+```bash
+# HTTP Header
+Authorization: Bearer <your-token>
+```
+
+The token can be:
+- **Admin Token**: Full access, found in `config.json`
+- **JWT Token**: User-scoped access from OAuth/email login
+
+<Note type="warning" title="Token Security">
+Never expose your admin token in client-side code. Use JWT tokens for frontend applications.
+</Note>
+
+## Quick Example
+
+### HTTP Request
+
+```bash
+curl -X POST https://your-gateway.example.com/api/chat \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "Hello, AeonSage!",
+    "sessionId": "default"
+  }'
+```
+
+### WebSocket Connection
+
+```javascript
+const ws = new WebSocket('wss://your-gateway.example.com/ws?token=YOUR_TOKEN');
+
+ws.onopen = () => {
+  ws.send(JSON.stringify({
+    type: 'chat',
+    message: 'Hello, AeonSage!',
+    sessionId: 'default'
+  }));
+};
+
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  console.log('Response:', data);
+};
+```
+
+## Response Format
+
+### Success Response
+
+```json
+{
+  "success": true,
+  "data": { ... }
+}
+```
+
+### Error Response
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "INVALID_TOKEN",
+    "message": "The provided token is invalid or expired"
+  }
+}
+```
+
+## Rate Limits
+
+| Endpoint | Limit |
+|----------|-------|
+| `/api/chat` | 60 requests/minute |
+| `/api/config` | 10 requests/minute |
+| `/ws` | 5 connections/minute |
+
+<Note type="info" title="Rate Limit Headers">
+Every response includes rate limit headers:
+```
+X-RateLimit-Limit: 60
+X-RateLimit-Remaining: 58
+X-RateLimit-Reset: 1708089600
+```
+</Note>
+
+## API Endpoints
+
+### Chat
+
+<CardGroup cols={2}>
+  <Card title="POST /api/chat" icon="message" href="/api-reference/http#post-apichat">
+    Send a message and get a response.
+  </Card>
+  <Card title="POST /api/chat/stream" icon="stream" href="/api-reference/http#post-apichatstream">
+    Stream a response with SSE.
+  </Card>
+</CardGroup>
+
+### Sessions
+
+<CardGroup cols={2}>
+  <Card title="GET /api/sessions" icon="list" href="/api-reference/http#get-apisessions">
+    List all sessions.
+  </Card>
+  <Card title="DELETE /api/sessions/:id" icon="trash" href="/api-reference/http#delete-apisessionsid">
+    Delete a session.
+  </Card>
+</CardGroup>
+
+### Configuration
+
+<CardGroup cols={2}>
+  <Card title="GET /api/config" icon="gear" href="/api-reference/http#get-apiconfig">
+    Get current configuration.
+  </Card>
+  <Card title="PUT /api/config" icon="pencil" href="/api-reference/http#put-apiconfig">
+    Update configuration.
+  </Card>
+</CardGroup>
+
+### Channels
+
+<CardGroup cols={2}>
+  <Card title="GET /api/channels" icon="plug" href="/api-reference/http#get-apichannels">
+    List connected channels.
+  </Card>
+  <Card title="POST /api/channels/:id/send" icon="paper-plane" href="/api-reference/http#post-apichannelsidsend">
+    Send a message to a channel.
+  </Card>
+</CardGroup>
+
+---
+
+## Client Libraries
+
+### JavaScript/TypeScript
+
+```bash
+npm install @aeonsage/sdk
+```
+
+```typescript
+import { AeonSage } from '@aeonsage/sdk';
+
+const client = new AeonSage({
+  token: 'your-token',
+  baseUrl: 'https://your-gateway.example.com'
+});
+
+// Send a message
+const response = await client.chat.send('Hello!', { sessionId: 'default' });
+
+// Stream a response
+for await (const chunk of client.chat.stream('Tell me a story')) {
+  process.stdout.write(chunk.content);
+}
+```
+
+### Python
+
+```bash
+pip install aeonsage
+```
+
+```python
+from aeonsage import AeonSage
+
+client = AeonSage(
+    token="your-token",
+    base_url="https://your-gateway.example.com"
+)
+
+# Send a message
+response = client.chat.send("Hello!", session_id="default")
+
+# Stream a response
+for chunk in client.chat.stream("Tell me a story"):
+    print(chunk.content, end="", flush=True)
+```
+
+<Note type="info" title="SDK Availability">
+Official SDKs are available for JavaScript, Python, and Go. Community SDKs exist for Rust, Ruby, and PHP.
+</Note>
+
+---
+
+## API Documentation
+
+The AeonSage API provides comprehensive endpoints for chat, sessions, configuration, and channel management. All endpoints support both REST and WebSocket protocols with consistent authentication.
+
+For detailed endpoint specifications, parameter schemas, and response formats, please refer to the inline examples and code snippets provided throughout this documentation.

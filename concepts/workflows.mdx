@@ -1,0 +1,283 @@
+---
+title: "Workflows"
+description: "Visual workflow automation with Canvas-style flowcharts."
+---
+
+Workflows enable you to build complex automation through an intuitive Canvas-style visual interface. Drag, connect, and configure nodes to create powerful AI-driven processes.
+
+---
+
+## Overview
+
+AeonSage Workflows provide a visual, node-based approach to automation:
+
+- **Drag-and-drop canvas interface** - Build flows visually
+- **Connect nodes** - Define flow logic
+- **Configure nodes** - Visual forms for each node
+- **Real-time execution** - See your workflow run
+- **Share workflows** - Version as code
+
+---
+
+## Canvas Interface
+
+### Visual Flow Builder
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  Workflow Canvas                                                             │
+│                                                                              │
+│    ┌─────────┐        ┌─────────┐        ┌─────────┐                       │
+│    │ Trigger │───────▶│  Action │───────▶│  Output │                       │
+│    │         │        │         │        │         │                       │
+│    │ Message │        │ AI Call │        │  Reply  │                       │
+│    │ Received│        │ GPT-4o  │        │ Channel │                       │
+│    └─────────┘        └─────────┘        └─────────┘                       │
+│         │                   │                                                │
+│         │              ┌────▼────┐                                          │
+│         │              │Condition│                                          │
+│         │              │  Check  │                                          │
+│         │              └────┬────┘                                          │
+│         │                   │                                                │
+│         ▼              ┌────▼────┐     ┌─────────┐                          │
+│    ┌─────────┐         │  True   │────▶│  Skill  │                          │
+│    │  Log    │         │  Path   │     │  Web    │                          │
+│    │ Event   │         └─────────┘     └─────────┘                          │
+│    └─────────┘                                                               │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Canvas Components
+
+**Triggers** - Events that start a workflow
+- Message Received
+- Schedule
+- Webhook
+- Manual
+
+**Actions** - Operations performed in the flow
+- AI Call
+- Send Message
+- Run Skill
+- HTTP Request
+
+**Logic** - Control flow and branching
+- Condition
+- Switch
+- Loop
+- Parallel
+
+**Outputs** - Results and responses
+- Reply
+- Store
+- Notify
+- Transform
+
+---
+
+## Node Types
+
+### Trigger Nodes
+
+#### Message Received
+Fires when a message arrives on configured channels.
+
+**Configuration:**
+- Channels: Select Telegram, Discord, WhatsApp, etc.
+- Filter: Optional expression to filter messages
+
+#### Schedule
+Fires on a time-based schedule.
+
+**Configuration:**
+- Cron expression: e.g., `0 9 * * *`
+- Timezone: UTC or Local
+
+#### Webhook
+Fires when external service calls the webhook URL.
+
+**Configuration:**
+- Method: GET or POST
+- Authentication: Enable/disable
+
+### Action Nodes
+
+#### AI Call
+Call an AI model with a prompt.
+
+**Configuration:**
+- Provider: OpenAI, Anthropic, Ollama
+- Model: Select available model
+- Prompt: Template with variables
+- Temperature: 0-2 (default 0.7)
+
+#### Run Skill
+Execute a skill action.
+
+**Configuration:**
+- Skill: Select from available skills
+- Action: Select skill action
+- Parameters: JSON configuration
+
+#### HTTP Request
+Make an HTTP request to external API.
+
+**Configuration:**
+- Method: GET, POST, PUT, DELETE
+- URL: Target endpoint
+- Headers: JSON object
+- Body: JSON payload
+
+### Logic Nodes
+
+#### Condition
+Branch based on a condition.
+
+**Configuration:**
+- Expression: Boolean expression
+- Outputs: True/False paths
+
+#### Switch
+Multiple branch selection.
+
+**Configuration:**
+- Expression: Value to switch on
+- Cases: Array of case values
+
+#### Parallel
+Execute multiple branches simultaneously.
+
+**Configuration:**
+- Branches: 2-10 parallel branches
+
+#### Loop
+Iterate over array items.
+
+**Configuration:**
+- Array: Expression returning array
+- Max Iterations: Safety limit
+
+---
+
+## Example Workflows
+
+### 1. Simple Q&A Bot
+
+**Flow:**
+1. Message Received (Trigger)
+2. Check if message contains "?" (Condition)
+3. If yes → Call AI with GPT-4o (Action)
+4. Send Reply (Output)
+
+**Stats:**
+- Nodes: 4
+- Avg Latency: 1.2s
+- Success Rate: 99.5%
+
+### 2. Multi-Channel Notification
+
+**Flow:**
+1. Webhook (Trigger)
+2. Transform Data (Action)
+3. Parallel Send to 3 channels (Logic)
+4. Send to Telegram, Discord, Slack (Outputs)
+
+**Stats:**
+- Nodes: 5
+- Avg Latency: 0.8s
+- Success Rate: 99.9%
+
+### 3. AI Research Assistant
+
+**Flow:**
+1. Message: !research (Trigger)
+2. Web Search (Action)
+3. Extract Content (Action)
+4. Loop through sources (Logic)
+5. Summarize with Claude (Action)
+6. Compile Report (Action)
+7. Send Report (Output)
+
+**Stats:**
+- Nodes: 7
+- Avg Latency: 15s
+- Success Rate: 97%
+
+---
+
+## Workflow as Code
+
+### Export and Version
+
+```yaml
+# workflow.yaml
+name: "Customer Support Bot"
+version: "1.2.0"
+trigger:
+  type: message
+  filter: "channel === 'telegram'"
+
+nodes:
+  - id: classify
+    type: ai_call
+    provider: openai
+    model: gpt-4o-mini
+    prompt: |
+      Classify this message: {{message.text}}
+      Categories: question, complaint, feedback
+
+  - id: route
+    type: switch
+    expression: "{{classify.category}}"
+    cases:
+      question: handle_question
+      complaint: handle_complaint
+      feedback: handle_feedback
+
+  - id: handle_question
+    type: ai_call
+    provider: openai
+    model: gpt-4o
+    prompt: "Answer: {{message.text}}"
+
+  - id: handle_complaint
+    type: parallel
+    branches:
+      - notify_team
+      - acknowledge
+
+connections:
+  - from: trigger
+    to: classify
+  - from: classify
+    to: route
+  - from: route.handle_question
+    to: handle_question
+```
+
+---
+
+## Best Practices
+
+### Keep Workflows Focused
+Each workflow should have a single, clear purpose. Split complex workflows into smaller, reusable ones.
+
+### Handle Errors Gracefully
+Add error handling branches to catch failures and provide fallback responses.
+
+### Use Variables Wisely
+Store intermediate results in variables to avoid redundant AI calls.
+
+### Test Thoroughly
+Use the debug mode to test workflows step-by-step before deployment.
+
+---
+
+## Next Steps
+
+Workflows provide a powerful visual approach to automation. To get started:
+
+- Review the node types and configuration options above
+- Study the example workflows for common patterns
+- Experiment with the workflow as code format for version control

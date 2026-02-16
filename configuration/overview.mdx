@@ -1,0 +1,497 @@
+---
+title: "Configuration"
+description: "Complete configuration reference for AeonSage."
+---
+
+<div className="intro">
+AeonSage offers flexible configuration through multiple methods: environment variables, configuration files, and CLI commands. This guide covers all configuration options.
+</div>
+
+---
+
+## Configuration Methods
+
+### Priority Order
+
+Configuration is loaded in the following priority (highest first):
+
+<PriorityList>
+  <Item level={1}>CLI flags (e.g., <code>--port 8080</code>)</Item>
+  <Item level={2}>Environment variables (e.g., <code>GATEWAY_PORT=8080</code>)</Item>
+  <Item level={3}>Configuration file (e.g., <code>~/.aeonsage/config.json</code>)</Item>
+  <Item level={4}>Default values</Item>
+</PriorityList>
+
+---
+
+## Configuration File
+
+### Location
+
+The configuration file is located at:
+
+<Table>
+  <thead>
+    <tr>
+      <th>Platform</th>
+      <th>Path</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>macOS/Linux</td>
+      <td><code>~/.aeonsage/config.json</code></td>
+    </tr>
+    <tr>
+      <td>Windows</td>
+      <td><code>%USERPROFILE%\.aeonsage\config.json</code></td>
+    </tr>
+    <tr>
+      <td>Custom</td>
+      <td><code>--config /path/to/config.json</code></td>
+    </tr>
+  </tbody>
+</Table>
+
+### Structure
+
+```json
+{
+  "gateway": {
+    "port": 8080,
+    "mode": "local",
+    "bind": "127.0.0.1"
+  },
+  "providers": {
+    "default": "openai",
+    "openai": {
+      "apiKey": "${OPENAI_API_KEY}",
+      "model": "gpt-4o"
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "botToken": "${TELEGRAM_BOT_TOKEN}"
+    }
+  },
+  "skills": {
+    "enabled": ["web", "memory", "files"]
+  },
+  "database": {
+    "type": "sqlite",
+    "path": "~/.aeonsage/data.db"
+  }
+}
+```
+
+---
+
+## Gateway Configuration
+
+<ConfigSection name="gateway">
+  <Table>
+    <thead>
+      <tr>
+        <th>Option</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>port</code></td>
+        <td>number</td>
+        <td>Configurable</td>
+        <td>Gateway HTTP server port</td>
+      </tr>
+      <tr>
+        <td><code>bind</code></td>
+        <td>string</td>
+        <td><code>127.0.0.1</code></td>
+        <td>Bind address (use 0.0.0.0 for all interfaces)</td>
+      </tr>
+      <tr>
+        <td><code>mode</code></td>
+        <td>string</td>
+        <td><code>local</code></td>
+        <td>Operation mode: local or saas</td>
+      </tr>
+      <tr>
+        <td><code>token</code></td>
+        <td>string</td>
+        <td>auto-generated</td>
+        <td>Admin authentication token</td>
+      </tr>
+      <tr>
+        <td><code>logLevel</code></td>
+        <td>string</td>
+        <td><code>info</code></td>
+        <td>Log level: debug, info, warn, error</td>
+      </tr>
+    </tbody>
+  </Table>
+</ConfigSection>
+
+### Environment Variables
+
+```bash
+GATEWAY_PORT=8080
+GATEWAY_BIND=127.0.0.1
+GATEWAY_MODE=local
+GATEWAY_TOKEN=your-secure-token
+GATEWAY_LOG_LEVEL=info
+```
+
+---
+
+## Provider Configuration
+
+<ConfigSection name="providers">
+  <Table>
+    <thead>
+      <tr>
+        <th>Option</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>default</code></td>
+        <td>string</td>
+        <td>Default provider name</td>
+      </tr>
+      <tr>
+        <td><code>fallback</code></td>
+        <td>string[]</td>
+        <td>Fallback chain when primary fails</td>
+      </tr>
+      <tr>
+        <td><code>[provider].apiKey</code></td>
+        <td>string</td>
+        <td>API key (use env var reference)</td>
+      </tr>
+      <tr>
+        <td><code>[provider].model</code></td>
+        <td>string</td>
+        <td>Default model for provider</td>
+      </tr>
+      <tr>
+        <td><code>[provider].temperature</code></td>
+        <td>number</td>
+        <td>Sampling temperature</td>
+      </tr>
+    </tbody>
+  </Table>
+</ConfigSection>
+
+### Example
+
+```json
+{
+  "providers": {
+    "default": "openai",
+    "fallback": ["openai", "anthropic", "ollama"],
+    "openai": {
+      "apiKey": "${OPENAI_API_KEY}",
+      "model": "gpt-4o",
+      "temperature": 0.7
+    },
+    "anthropic": {
+      "apiKey": "${ANTHROPIC_API_KEY}",
+      "model": "claude-3-5-sonnet-latest"
+    },
+    "ollama": {
+      "host": "http://localhost:11434",
+      "model": "llama3.2"
+    }
+  }
+}
+```
+
+---
+
+## Channel Configuration
+
+<ConfigSection name="channels">
+  <Table>
+    <thead>
+      <tr>
+        <th>Option</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>[channel].enabled</code></td>
+        <td>boolean</td>
+        <td>Enable/disable channel</td>
+      </tr>
+      <tr>
+        <td><code>[channel].allowlist</code></td>
+        <td>string[]</td>
+        <td>Allowed users/groups</td>
+      </tr>
+      <tr>
+        <td><code>[channel].prefix</code></td>
+        <td>string</td>
+        <td>Command prefix</td>
+      </tr>
+      <tr>
+        <td><code>[channel].provider</code></td>
+        <td>string</td>
+        <td>Override default provider</td>
+      </tr>
+    </tbody>
+  </Table>
+</ConfigSection>
+
+### Example
+
+```json
+{
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "botToken": "${TELEGRAM_BOT_TOKEN}",
+      "allowlist": ["user:123456789"],
+      "prefix": "!",
+      "webhookUrl": "https://your-gateway.com/webhook/telegram"
+    },
+    "discord": {
+      "enabled": true,
+      "botToken": "${DISCORD_BOT_TOKEN}",
+      "applicationId": "${DISCORD_APP_ID}",
+      "allowlist": ["guild:123456789"],
+      "provider": "anthropic"
+    }
+  }
+}
+```
+
+---
+
+## Database Configuration
+
+<ConfigSection name="database">
+  <Table>
+    <thead>
+      <tr>
+        <th>Option</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>type</code></td>
+        <td>string</td>
+        <td><code>sqlite</code></td>
+        <td>Database type: sqlite or postgres</td>
+      </tr>
+      <tr>
+        <td><code>path</code></td>
+        <td>string</td>
+        <td><code>~/.aeonsage/data.db</code></td>
+        <td>SQLite database path</td>
+      </tr>
+      <tr>
+        <td><code>url</code></td>
+        <td>string</td>
+        <td>-</td>
+        <td>PostgreSQL connection URL</td>
+      </tr>
+      <tr>
+        <td><code>poolSize</code></td>
+        <td>number</td>
+        <td>10</td>
+        <td>Connection pool size (PostgreSQL)</td>
+      </tr>
+    </tbody>
+  </Table>
+</ConfigSection>
+
+### SQLite (Local Mode)
+
+```json
+{
+  "database": {
+    "type": "sqlite",
+    "path": "~/.aeonsage/data.db"
+  }
+}
+```
+
+### PostgreSQL (SaaS Mode)
+
+```json
+{
+  "database": {
+    "type": "postgres",
+    "url": "${DATABASE_URL}",
+    "poolSize": 20
+  }
+}
+```
+
+---
+
+## Session Configuration
+
+<ConfigSection name="session">
+  <Table>
+    <thead>
+      <tr>
+        <th>Option</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>contextWindow</code></td>
+        <td>number</td>
+        <td>50</td>
+        <td>Messages to keep in context</td>
+      </tr>
+      <tr>
+        <td><code>maxTokens</code></td>
+        <td>number</td>
+        <td>4096</td>
+        <td>Max tokens per request</td>
+      </tr>
+      <tr>
+        <td><code>timeout</code></td>
+        <td>number</td>
+        <td>60000</td>
+        <td>Session timeout (ms)</td>
+      </tr>
+      <tr>
+        <td><code>memoryEnabled</code></td>
+        <td>boolean</td>
+        <td>true</td>
+        <td>Enable long-term memory</td>
+      </tr>
+    </tbody>
+  </Table>
+</ConfigSection>
+
+---
+
+## Logging Configuration
+
+<ConfigSection name="logging">
+  <Table>
+    <thead>
+      <tr>
+        <th>Option</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>level</code></td>
+        <td>string</td>
+        <td><code>info</code></td>
+        <td>Log level: debug, info, warn, error</td>
+      </tr>
+      <tr>
+        <td><code>format</code></td>
+        <td>string</td>
+        <td><code>json</code></td>
+        <td>Output format: json or pretty</td>
+      </tr>
+      <tr>
+        <td><code>file</code></td>
+        <td>string</td>
+        <td>-</td>
+        <td>Log file path</td>
+      </tr>
+      <tr>
+        <td><code>audit</code></td>
+        <td>boolean</td>
+        <td>false</td>
+        <td>Enable audit logging</td>
+      </tr>
+    </tbody>
+  </Table>
+</ConfigSection>
+
+---
+
+## CLI Commands
+
+### View Configuration
+
+```bash
+# View all configuration
+aeonsage config list
+
+# View specific key
+aeonsage config get gateway.port
+
+# View effective config (with env vars resolved)
+aeonsage config list --effective
+```
+
+### Set Configuration
+
+```bash
+# Set a value
+aeonsage config set gateway.port 8080
+
+# Set nested value
+aeonsage config set providers.openai.model gpt-4o
+
+# Set from file
+aeonsage config import /path/to/config.json
+```
+
+### Unset Configuration
+
+```bash
+# Unset a value (reverts to default)
+aeonsage config unset gateway.port
+
+# Reset all configuration
+aeonsage config reset
+```
+
+---
+
+## Environment Variables Reference
+
+<EnvVarTable>
+  <Var name="GATEWAY_PORT">Gateway HTTP server port</Var>
+  <Var name="GATEWAY_BIND">Gateway bind address</Var>
+  <Var name="GATEWAY_MODE">Operation mode (local/saas)</Var>
+  <Var name="GATEWAY_TOKEN">Admin authentication token</Var>
+  <Var name="DATABASE_URL">PostgreSQL connection URL</Var>
+  <Var name="OPENAI_API_KEY">OpenAI API key</Var>
+  <Var name="ANTHROPIC_API_KEY">Anthropic API key</Var>
+  <Var name="GOOGLE_API_KEY">Google AI API key</Var>
+  <Var name="OLLAMA_HOST">Ollama server host</Var>
+  <Var name="TELEGRAM_BOT_TOKEN">Telegram bot token</Var>
+  <Var name="DISCORD_BOT_TOKEN">Discord bot token</Var>
+</EnvVarTable>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="AI Providers" icon="cpu" href="/concepts/ai-providers">
+    <p>Configure AI model providers.</p>
+  </Card>
+  
+  <Card title="Channels" icon="plug" href="/concepts/channels">
+    <p>Configure messaging channels.</p>
+  </Card>
+</CardGroup>

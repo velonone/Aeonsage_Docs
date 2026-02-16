@@ -1,0 +1,384 @@
+---
+title: "AI Providers"
+description: "Configure AI model providers for AeonSage."
+---
+
+<div className="intro">
+AeonSage supports 20+ AI providers, giving you the flexibility to use the best model for your needs. Switch between providers seamlessly without changing your agent code.
+</div>
+
+---
+
+## Supported Providers
+
+### Cloud Providers
+
+<ProviderGrid>
+  <Provider name="OpenAI" status="stable">
+    <Models models={["GPT-4o", "GPT-4 Turbo", "GPT-4", "GPT-3.5 Turbo"]} />
+    <Features features={["Streaming", "Vision", "Function Calling", "JSON Mode"]} />
+  </Provider>
+  
+  <Provider name="Anthropic" status="stable">
+    <Models models={["Claude 4", "Claude 3.5 Sonnet", "Claude 3 Opus", "Claude 3 Haiku"]} />
+    <Features features={["Streaming", "Vision", "Tool Use", "Extended Context"]} />
+  </Provider>
+  
+  <Provider name="Google" status="stable">
+    <Models models={["Gemini 2.0 Flash", "Gemini 1.5 Pro", "Gemini 1.5 Flash"]} />
+    <Features features={["Streaming", "Vision", "Long Context"]} />
+  </Provider>
+  
+  <Provider name="Mistral" status="stable">
+    <Models models={["Mistral Large", "Mistral Medium", "Mistral Small", "Codestral"]} />
+    <Features features={["Streaming", "Function Calling"]} />
+  </Provider>
+  
+  <Provider name="Groq" status="stable">
+    <Models models={["Llama 3.3 70B", "Mixtral 8x7B", "Gemma 2"]} />
+    <Features features={["Ultra-fast Inference", "Streaming"]} />
+  </Provider>
+</ProviderGrid>
+
+### Local Providers
+
+<LocalProviderGrid>
+  <Provider name="Ollama" status="stable">
+    <p>Run open-source models locally on your hardware.</p>
+    <Models models={["Llama 3.2", "Mistral", "Qwen 2.5", "Phi 3", "Gemma 2"]} />
+    <Link href="/providers/ollama">Setup Guide</Link>
+  </Provider>
+  
+  <Provider name="LM Studio" status="beta">
+    <p>GUI-based local model runner with OpenAI-compatible API.</p>
+    <Features features={["OpenAI Compatible", "GPU Acceleration"]} />
+  </Provider>
+  
+  <Provider name="vLLM" status="stable">
+    <p>High-performance local inference server.</p>
+    <Features features={["Paged Attention", "Continuous Batching"]} />
+  </Provider>
+</LocalProviderGrid>
+
+### Aggregators
+
+<AggregatorGrid>
+  <Provider name="OpenRouter" status="stable">
+    <p>Access 100+ models through a single API.</p>
+    <Features features={["Unified API", "Auto-fallback", "Cost Optimization"]} />
+  </Provider>
+  
+  <Provider name="Together AI" status="stable">
+    <p>Serverless open-source model inference.</p>
+    <Features features={["Fast Inference", "Fine-tuning"]} />
+  </Provider>
+</AggregatorGrid>
+
+---
+
+## Provider Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     Provider Selection                           │
+│                                                                 │
+│  ┌──────────────────────────────────────────────────────────┐  │
+│  │                   Gateway Router                          │  │
+│  │                         │                                 │  │
+│  │         ┌───────────────┼───────────────┐                │  │
+│  │         ▼               ▼               ▼                │  │
+│  │   ┌──────────┐   ┌──────────┐   ┌──────────┐           │  │
+│  │   │ Primary  │   │ Fallback │   │  Local   │           │  │
+│  │   │ Provider │   │ Provider │   │ Provider │           │  │
+│  │   │ (OpenAI) │   │(Anthropic)│   │ (Ollama) │           │  │
+│  │   └──────────┘   └──────────┘   └──────────┘           │  │
+│  │         │               │               │                │  │
+│  │         └───────────────┼───────────────┘                │  │
+│  │                         ▼                                 │  │
+│  │              ┌──────────────────┐                        │  │
+│  │              │ Unified Response │                        │  │
+│  │              └──────────────────┘                        │  │
+│  └──────────────────────────────────────────────────────────┘  │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Configuration
+
+### Environment Variables
+
+<Table>
+  <thead>
+    <tr>
+      <th>Provider</th>
+      <th>Variable</th>
+      <th>Example</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>OpenAI</td>
+      <td><code>OPENAI_API_KEY</code></td>
+      <td><code>sk-...</code></td>
+    </tr>
+    <tr>
+      <td>Anthropic</td>
+      <td><code>ANTHROPIC_API_KEY</code></td>
+      <td><code>sk-ant-...</code></td>
+    </tr>
+    <tr>
+      <td>Google</td>
+      <td><code>GOOGLE_API_KEY</code></td>
+      <td><code>AIza...</code></td>
+    </tr>
+    <tr>
+      <td>OpenRouter</td>
+      <td><code>OPENROUTER_API_KEY</code></td>
+      <td><code>sk-or-...</code></td>
+    </tr>
+    <tr>
+      <td>Ollama</td>
+      <td><code>OLLAMA_HOST</code></td>
+      <td><code>http://localhost:11434</code></td>
+    </tr>
+  </tbody>
+</Table>
+
+### Configuration File
+
+```json
+{
+  "providers": {
+    "default": "openai",
+    "openai": {
+      "apiKey": "${OPENAI_API_KEY}",
+      "model": "gpt-4o",
+      "temperature": 0.7
+    },
+    "anthropic": {
+      "apiKey": "${ANTHROPIC_API_KEY}",
+      "model": "claude-3-5-sonnet-latest"
+    },
+    "ollama": {
+      "host": "http://localhost:11434",
+      "model": "llama3.2"
+    }
+  }
+}
+```
+
+---
+
+## Provider Selection
+
+### Default Provider
+
+Set the default provider for all requests:
+
+```bash
+aeonsage config set providers.default openai
+```
+
+### Per-Channel Provider
+
+Different channels can use different providers:
+
+```json
+{
+  "channels": {
+    "telegram": {
+      "provider": "openai",
+      "model": "gpt-4o"
+    },
+    "discord": {
+      "provider": "anthropic",
+      "model": "claude-3-5-sonnet-latest"
+    }
+  }
+}
+```
+
+### Fallback Chain
+
+Configure automatic fallback when primary fails:
+
+```json
+{
+  "providers": {
+    "fallback": ["openai", "anthropic", "ollama"],
+    "fallbackDelay": 5000
+  }
+}
+```
+
+---
+
+## Model Parameters
+
+### Common Parameters
+
+<Table>
+  <thead>
+    <tr>
+      <th>Parameter</th>
+      <th>Range</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>temperature</code></td>
+      <td>0.0 - 2.0</td>
+      <td>Randomness of output (higher = more creative)</td>
+    </tr>
+    <tr>
+      <td><code>maxTokens</code></td>
+      <td>1 - model limit</td>
+      <td>Maximum tokens in response</td>
+    </tr>
+    <tr>
+      <td><code>topP</code></td>
+      <td>0.0 - 1.0</td>
+      <td>Nucleus sampling threshold</td>
+    </tr>
+    <tr>
+      <td><code>frequencyPenalty</code></td>
+      <td>-2.0 - 2.0</td>
+      <td>Repetition penalty</td>
+    </tr>
+    <tr>
+      <td><code>presencePenalty</code></td>
+      <td>-2.0 - 2.0</td>
+      <td>Topic diversity penalty</td>
+    </tr>
+  </tbody>
+</Table>
+
+### Configuration Example
+
+```json
+{
+  "providers": {
+    "openai": {
+      "model": "gpt-4o",
+      "parameters": {
+        "temperature": 0.7,
+        "maxTokens": 4096,
+        "topP": 0.9,
+        "frequencyPenalty": 0.3
+      }
+    }
+  }
+}
+```
+
+---
+
+## Testing Providers
+
+### Connection Test
+
+```bash
+# Test all providers
+aeonsage providers test
+
+# Test specific provider
+aeonsage providers test openai
+
+# Test with custom message
+aeonsage providers test openai --message "Hello, world!"
+```
+
+### Performance Benchmark
+
+```bash
+# Run benchmark
+aeonsage providers benchmark
+
+# Compare providers
+aeonsage providers benchmark openai anthropic
+```
+
+---
+
+## Cost Optimization
+
+### Cost Tracking
+
+```bash
+# View usage statistics
+aeonsage providers stats
+
+# View cost breakdown
+aeonsage providers costs --period month
+```
+
+### Optimization Strategies
+
+<OptimizationGrid>
+  <Strategy name="Model Tiering">
+    <p>Use cheaper models for simple tasks, premium for complex ones.</p>
+    <code>gpt-3.5-turbo for quick responses, gpt-4o for reasoning</code>
+  </Strategy>
+  
+  <Strategy name="Caching">
+    <p>Enable response caching for repeated queries.</p>
+    <code>aeonsage config set cache.enabled true</code>
+  </Strategy>
+  
+  <Strategy name="Local Fallback">
+    <p>Use Ollama as free fallback for non-critical requests.</p>
+  </Strategy>
+  
+  <Strategy name="Token Limits">
+    <p>Set reasonable maxTokens to prevent runaway costs.</p>
+  </Strategy>
+</OptimizationGrid>
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+<TroubleshootList>
+  <Issue name="API Key Invalid">
+    <p>Verify key format matches provider expectations.</p>
+    <p>Check key has not expired or been revoked.</p>
+    <p>Ensure key has necessary permissions.</p>
+  </Issue>
+  
+  <Issue name="Rate Limiting">
+    <p>Reduce request frequency.</p>
+    <p>Upgrade API tier for higher limits.</p>
+    <p>Enable request queuing.</p>
+  </Issue>
+  
+  <Issue name="Timeout Errors">
+    <p>Increase timeout setting.</p>
+    <p>Check network connectivity.</p>
+    <p>Reduce maxTokens for faster responses.</p>
+  </Issue>
+  
+  <Issue name="Ollama Connection Failed">
+    <p>Verify Ollama is running: <code>ollama list</code></p>
+    <p>Check OLLAMA_HOST is correct.</p>
+    <p>Ensure model is pulled: <code>ollama pull llama3.2</code></p>
+  </Issue>
+</TroubleshootList>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Setup Ollama" icon="server" href="/providers/ollama">
+    <p>Run models locally for privacy and cost savings.</p>
+  </Card>
+  
+  <Card title="Configuration" icon="settings" href="/configuration/overview">
+    <p>Full configuration reference.</p>
+  </Card>
+</CardGroup>

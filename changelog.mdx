@@ -1,0 +1,227 @@
+---
+title: "Changelog"
+description: "AeonSage version history and release notes."
+---
+
+All notable changes to AeonSage are documented on this page.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [2026.2.15] - 2026-02-15
+
+### Added
+
+- **Desktop App v2** - Complete rewrite with Tauri v2 and React 19
+- **Multi-tenant SaaS** - Support for cloud-hosted multi-user deployments
+- **OAuth Authentication** - Google, GitHub, Telegram OAuth providers
+- **Email Authentication** - Password signup with email verification
+- **Stripe Billing** - Subscription management with Stripe integration
+- **27+ Channel Plugins** - Telegram, Discord, WhatsApp, Slack, Signal, iMessage, and more
+- **20+ AI Providers** - OpenAI, Anthropic, Ollama, OpenRouter, and more
+- **Local AI Support** - First-class Ollama integration for offline operation
+- **Skill System** - Extensible plugin architecture for custom capabilities
+
+### Changed
+
+- Migrated from OpenClaw base to independent architecture (70% new code)
+- Desktop app moved from Electron to Tauri for better performance
+- Website rebuilt with React 19 and Three.js for 3D effects
+- Gateway API redesigned with proper versioning
+
+### Fixed
+
+- Memory leaks in long-running Gateway sessions
+- WebSocket connection stability issues
+- Rate limiting for API endpoints
+
+### Security
+
+- Implemented JWT-based authentication
+- Added CSRF protection for web forms
+- Enabled audit logging for compliance
+- Encrypted credential storage
+
+---
+
+## [2025.12.0] - 2025-12-01
+
+### Added
+
+- **Workflow Canvas** - Visual multi-agent orchestration
+- **Agent Execution Visualization** - Real-time thinking process display
+- **Document Export** - MD, PDF, and DOCX export formats
+- **PWA Support** - Installable web app on mobile devices
+
+### Changed
+
+- Improved conversation memory with vector search
+- Optimized WebSocket message handling
+- Enhanced error messages with actionable suggestions
+
+### Fixed
+
+- Channel reconnection after network outage
+- Timezone handling in scheduled tasks
+- Unicode rendering in desktop notifications
+
+---
+
+## [2025.10.0] - 2025-10-15
+
+### Added
+
+- **iMessage Channel** - Apple Messages integration via BlueBubbles
+- **Signal Channel** - Private messaging via Signal
+- **Microsoft Teams** - Enterprise messaging support
+- **Matrix/Element** - Decentralized messaging protocol
+
+### Changed
+
+- Unified channel adapter interface
+- Improved channel status monitoring
+- Better error recovery for channel failures
+
+### Fixed
+
+- WhatsApp QR code refresh timing
+- Discord rate limit handling
+- Slack thread context preservation
+
+---
+
+## [2025.8.0] - 2025-08-20
+
+### Added
+
+- **Local Model Support** - Ollama integration for offline AI
+- **BYOK Mode** - Bring your own API keys
+- **Model Routing** - Route requests to different models by task type
+- **Streaming Responses** - Real-time token streaming
+
+### Changed
+
+- Refactored AI provider abstraction
+- Improved model switching latency
+- Enhanced prompt template system
+
+### Fixed
+
+- OpenAI token counting accuracy
+- Anthropic streaming error handling
+- Ollama model discovery on Windows
+
+---
+
+## [2025.6.0] - 2025-06-10
+
+### Added
+
+- **Skill Marketplace** - Browse and install community skills
+- **Custom Skills** - Create and share your own skills
+- **Skill Permissions** - Granular permission control
+- **Skill Sandbox** - Isolated execution environment
+
+### Changed
+
+- Migrated from hardcoded tools to skill system
+- Improved skill loading performance
+- Enhanced skill error handling
+
+### Security
+
+- Added skill permission prompts
+- Implemented skill execution timeout
+- Added skill audit logging
+
+---
+
+## [2025.4.0] - 2025-04-25
+
+### Added
+
+- **Web Dashboard** - Browser-based Gateway management
+- **Channel Configuration UI** - Visual channel setup
+- **Real-time Logs** - Live log streaming in dashboard
+- **System Status** - Health monitoring dashboard
+
+### Changed
+
+- Redesigned control panel interface
+- Improved configuration validation
+- Enhanced error display in UI
+
+---
+
+## [2025.2.0] - 2025-02-15
+
+### Added
+
+- **Telegram Channel** - First channel integration
+- **Discord Channel** - Server and DM support
+- **WhatsApp Channel** - Web API integration
+- **Slack Channel** - Workspace integration
+
+### Changed
+
+- Established channel plugin architecture
+- Unified message format across channels
+- Implemented channel-specific features
+
+---
+
+## [2025.1.0] - 2025-01-01
+
+### Added
+
+- **Gateway Engine** - Core runtime for AI orchestration
+- **WebSocket API** - Real-time bidirectional communication
+- **HTTP API** - RESTful management endpoints
+- **Session Management** - Conversation context persistence
+- **Configuration System** - JSON-based configuration
+
+### Technical Details
+
+- Node.js 22+ runtime
+- SQLite default storage
+- WebSocket server with heartbeats
+- JWT authentication
+
+---
+
+## Version History
+
+| Version | Date | Type |
+|---------|------|------|
+| 2026.2.15 | 2026-02-15 | Major |
+| 2025.12.0 | 2025-12-01 | Minor |
+| 2025.10.0 | 2025-10-15 | Minor |
+| 2025.8.0 | 2025-08-20 | Minor |
+| 2025.6.0 | 2025-06-10 | Minor |
+| 2025.4.0 | 2025-04-25 | Minor |
+| 2025.2.0 | 2025-02-15 | Minor |
+| 2025.1.0 | 2025-01-01 | Initial |
+
+---
+
+## Release Channels
+
+| Channel | Description | Update Frequency |
+|---------|-------------|------------------|
+| **Stable** | Production-ready releases | Monthly |
+| **Beta** | Pre-release testing | Weekly |
+| **Dev** | Latest changes | Daily |
+
+<Note type="info" title="Version Scheme">
+AeonSage uses date-based versioning: `YYYY.M.D` (e.g., `2026.2.15`).
+
+- Major changes: New architecture or breaking changes
+- Minor changes: New features, improvements
+- Patch changes: Bug fixes, security updates
+</Note>
+
+---
+
+## Upgrading
+
+See the [Upgrading Guide](/self-hosting/upgrading) for migration instructions between versions.

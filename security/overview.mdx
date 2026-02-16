@@ -1,0 +1,283 @@
+---
+title: "Security Overview"
+description: "AeonSage security model and best practices."
+---
+
+AeonSage is designed with a **security-first** approach. This page explains the security model and how to configure AeonSage securely.
+
+## Security Principles
+
+<FeatureCardGroup>
+  <FeatureCard
+    title="Data Sovereignty"
+    icon="shield"
+    description="Your data stays on your infrastructure. You control where it lives and who can access it."
+  />
+  <FeatureCard
+    title="Zero Trust"
+    icon="lock"
+    description="Every request is authenticated and authorized. No implicit trust between components."
+  />
+  <FeatureCard
+    title="Defense in Depth"
+    icon="layer-group"
+    description="Multiple layers of security: network, authentication, encryption, and audit logging."
+  />
+  <FeatureCard
+    title="Minimal Attack Surface"
+    icon="compress-arrows-alt"
+    description="Only necessary ports exposed. Optional features can be disabled."
+  />
+</FeatureCardGroup>
+
+## Authentication Model
+
+### Authentication Layers
+
+```
+┌─────────────────────────────────────────────────────┐
+│                  Request Flow                        │
+├─────────────────────────────────────────────────────┤
+│                                                      │
+│  User Request ──► [Admin Token] ──► Full Access     │
+│                                                      │
+│  User Request ──► [JWT Token] ──► Scoped Access     │
+│                                                      │
+│  Channel Message ──► [Access Code] ──► Channel Only │
+│                                                      │
+└─────────────────────────────────────────────────────┘
+```
+
+### Token Types
+
+| Token Type | Scope | Use Case |
+|------------|-------|----------|
+| **Admin Token** | Full access | Server-side operations, Desktop app |
+| **JWT Token** | User-scoped | Web dashboard, API access |
+| **Access Code** | Single channel | Telegram/Discord bot authentication |
+| **License Key** | Feature unlock | Pro features activation |
+
+<Note type="warning" title="Token Storage">
+- Admin token: Store in `config.json` or environment variable
+- JWT: Store in secure HTTP-only cookies or secure storage
+- Access codes: Never store, one-time use
+- License keys: Encrypted in database
+</Note>
+
+## Encryption
+
+### At Rest
+
+| Data Type | Encryption | Key Management |
+|-----------|------------|----------------|
+| Configuration | AES-256 | Derived from admin token |
+| Vector Memory | AES-256 | User-specific key |
+| Credentials | AES-256-GCM | Master key rotation |
+| Logs | None (optional) | Configurable |
+
+### In Transit
+
+| Connection | Protocol | Minimum Version |
+|------------|----------|-----------------|
+| HTTP API | TLS | 1.2 (1.3 recommended) |
+| WebSocket | WSS | 1.2 |
+| Database | SSL | Enabled by default |
+| Channel APIs | HTTPS | Per-provider |
+
+<Note type="info" title="Local Development">
+For local development, TLS is optional. In production, always use TLS.
+</Note>
+
+## Network Security
+
+### Recommended Firewall Rules
+
+```bash
+# Allow only necessary ports
+# Gateway HTTP/WS
+ALLOW tcp 18789
+
+# PostgreSQL (if separate server)
+ALLOW tcp 5432 FROM gateway-servers
+
+# SSH (for administration)
+ALLOW tcp 22 FROM admin-ips
+
+# Deny all other incoming
+DENY all
+```
+
+### Reverse Proxy Configuration
+
+For production, use a reverse proxy:
+
+```nginx
+# nginx.conf
+server {
+    listen 443 ssl http2;
+    server_name gateway.your-domain.com;
+    
+    ssl_certificate /path/to/cert.pem;
+    ssl_certificate_key /path/to/key.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256;
+    
+    # Security headers
+    add_header X-Frame-Options DENY;
+    add_header X-Content-Type-Options nosniff;
+    add_header X-XSS-Protection "1; mode=block";
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains";
+    
+    location / {
+        proxy_pass http://127.0.0.1:18789;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+## Data Privacy
+
+### What Data is Stored
+
+| Data | Storage | Retention |
+|------|---------|-----------|
+| Conversation history | Local DB | Configurable |
+| Vector embeddings | Local DB | Configurable |
+| Configuration | Local files | Until deleted |
+| API keys (BYOK) | Encrypted | Until deleted |
+| Audit logs | Local files | Configurable |
+
+### Data That is NOT Stored
+
+- User passwords (only hashes)
+- OAuth tokens (only references)
+- Third-party messages (processed, not stored)
+
+### Data That Leaves Your Server
+
+<Note type="warning" title="External Communication">
+The following data may leave your server:
+
+1. **AI API requests** - Sent to OpenAI, Anthropic, etc. (unless using local models)
+2. **Channel messages** - Sent to Telegram, Discord, etc.
+3. **License validation** - Sent to `license.aeonsage.org` (Pro features only)
+
+To prevent any external communication, use **offline mode** with Ollama.
+</Note>
+
+## Audit Logging
+
+### Enable Audit Logging
+
+```json
+// config.json
+{
+  "audit": {
+    "enabled": true,
+    "logLevel": "info",
+    "includeRequestBody": false,
+    "retentionDays": 90
+  }
+}
+```
+
+### Audit Log Events
+
+| Event | Level | Description |
+|-------|-------|-------------|
+| `auth.success` | info | Successful authentication |
+| `auth.failure` | warn | Failed authentication attempt |
+| `config.change` | info | Configuration modified |
+| `api.request` | debug | API request (optional) |
+| `skill.execute` | info | Skill execution |
+| `error` | error | Application errors |
+
+### Query Audit Logs
+
+```bash
+# View recent audit events
+aeonsage audit list --limit 100
+
+# Filter by type
+aeonsage audit list --type auth.failure
+
+# Export for compliance
+aeonsage audit export --format json --output audit-export.json
+```
+
+## Compliance
+
+### GDPR Considerations
+
+AeonSage supports GDPR compliance:
+
+- **Data minimization**: Only necessary data is collected
+- **Right to access**: Export all user data via API
+- **Right to erasure**: Delete all user data
+- **Data portability**: Export in standard formats
+
+### HIPAA Considerations
+
+<Note type="warning" title="Healthcare Use">
+AeonSage is not HIPAA-certified out of the box. For healthcare use:
+
+1. Enable encryption at rest
+2. Configure audit logging
+3. Use a Business Associate Agreement (BAA) with AI providers
+4. Conduct a security assessment
+</Note>
+
+### SOC 2
+
+Self-hosted deployments can achieve SOC 2 compliance by:
+
+1. Implementing the security controls documented here
+2. Enabling comprehensive audit logging
+3. Regular security assessments
+4. Following the AeonSage security hardening guide
+
+## Security Checklist
+
+### Production Deployment
+
+```markdown
+Before deploying to production:
+
+[ ] Change default admin token
+[ ] Enable TLS/HTTPS
+[ ] Configure firewall rules
+[ ] Enable audit logging
+[ ] Set up rate limiting
+[ ] Review channel access controls
+[ ] Configure backup encryption
+[ ] Document incident response plan
+```
+
+### Regular Maintenance
+
+```markdown
+Monthly:
+
+[ ] Rotate API keys
+[ ] Review audit logs
+[ ] Update dependencies
+[ ] Check for security advisories
+[ ] Verify backup integrity
+```
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="key" href="/security/authentication">
+    Configure authentication methods.
+  </Card>
+  <Card title="Encryption" icon="lock" href="/security/encryption">
+    Set up encryption for data at rest.
+  </Card>
+</CardGroup>

@@ -1,0 +1,131 @@
+{
+  "name": "AeonSage",
+  "logo": {
+    "light": "/logos/aeonsage-letter-logo.svg",
+    "dark": "/logos/aeonsage-letter-logo.svg"
+  },
+  "favicon": "/aeonsage-logo02.svg",
+  "colors": {
+    "primary": "#FF7620",
+    "light": "#FFB380",
+    "dark": "#0a0a0a",
+    "background": {
+      "dark": "#000000",
+      "light": "#ffffff"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "Download",
+      "url": "https://aeonsage.org/download"
+    },
+    {
+      "name": "GitHub",
+      "url": "https://github.com/velonone/AeonsagePro"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Dashboard",
+    "url": "https://aeonsage.org/dashboard"
+  },
+  "primaryTab": {
+    "name": "Documentation"
+  },
+  "tabs": [
+    {
+      "name": "API Reference",
+      "url": "api-reference"
+    },
+    {
+      "name": "Self-Hosting",
+      "url": "self-hosting"
+    },
+    {
+      "name": "Resources",
+      "url": "resources"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Get Started",
+      "pages": [
+        "introduction",
+        "installation",
+        "quickstart"
+      ]
+    },
+    {
+      "group": "Core Concepts",
+      "pages": [
+        "concepts/architecture",
+        "concepts/workflows",
+        "concepts/gateway",
+        "concepts/channels",
+        "concepts/ai-providers",
+        "concepts/skills",
+        "concepts/ecosystem"
+      ]
+    },
+    {
+      "group": "Channels",
+      "pages": [
+        "channels/overview",
+        "channels/telegram"
+      ]
+    },
+    {
+      "group": "Configuration",
+      "pages": [
+        "configuration/overview"
+      ]
+    },
+    {
+      "group": "Desktop",
+      "pages": [
+        "desktop/installation"
+      ]
+    },
+    {
+      "group": "AI Providers",
+      "pages": [
+        "providers/ollama"
+      ]
+    },
+    {
+      "group": "Self-Hosting",
+      "pages": [
+        "self-hosting/overview",
+        "self-hosting/docker"
+      ]
+    },
+    {
+      "group": "Security",
+      "pages": [
+        "security/overview"
+      ]
+    },
+    {
+      "group": "Resources",
+      "pages": [
+        "resources/faq",
+        "changelog"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/velonone/AeonsagePro",
+    "twitter": "https://twitter.com/aeonsage",
+    "discord": "https://discord.gg/aeonsage",
+    "website": "https://aeonsage.org"
+  },
+  "analytics": {
+    "plausible": {
+      "domain": "docs.aeonsage.org"
+    }
+  },
+  "feedback": {
+    "thumbsRating": true,
+    "suggestEdit": true,
+    "raiseIssue": true
+  }
+}

@@ -1,0 +1,346 @@
+---
+title: "Gateway"
+description: "Understanding the AeonSage Gateway - the core orchestration engine."
+---
+
+<div className="intro">
+The Gateway is the core orchestration engine that powers all AeonSage operations. It handles message routing, session management, AI provider integration, and channel coordination.
+</div>
+
+---
+
+## Overview
+
+The AeonSage Gateway is a single binary that serves as the central nervous system of your AI infrastructure. It is designed to be:
+
+<FeatureGrid>
+  <Feature title="Lightweight">
+    <p>~200MB memory footprint at idle, scales efficiently with load.</p>
+  </Feature>
+  
+  <Feature title="Self-Contained">
+    <p>Zero external dependencies for basic operation. SQLite embedded database included.</p>
+  </Feature>
+  
+  <Feature title="Extensible">
+    <p>Plugin architecture allows adding channels, providers, and skills without core modifications.</p>
+  </Feature>
+  
+  <Feature title="Observable">
+    <p>Built-in metrics, health checks, and structured logging for production monitoring.</p>
+  </Feature>
+</FeatureGrid>
+
+---
+
+## Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      AeonSage Gateway                           │
+│                                                                 │
+│  ┌───────────────────────────────────────────────────────────┐ │
+│  │                     API Layer                              │ │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐       │ │
+│  │  │  REST API   │  │  WebSocket  │  │  Webhook    │       │ │
+│  │  │  /api/*     │  │  /ws        │  │  /webhook/* │       │ │
+│  │  └─────────────┘  └─────────────┘  └─────────────┘       │ │
+│  └───────────────────────────────────────────────────────────┘ │
+│                              │                                  │
+│  ┌───────────────────────────▼───────────────────────────────┐ │
+│  │                   Core Services                            │ │
+│  │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐        │ │
+│  │  │ Router  │ │ Session │ │ Plugin  │ │  Skill  │        │ │
+│  │  │ Engine  │ │ Manager │ │ Loader  │ │ Runner  │        │ │
+│  │  └─────────┘ └─────────┘ └─────────┘ └─────────┘        │ │
+│  └───────────────────────────────────────────────────────────┘ │
+│                              │                                  │
+│  ┌───────────────────────────▼───────────────────────────────┐ │
+│  │                   Data Layer                               │ │
+│  │  ┌─────────────────┐  ┌─────────────────────────┐        │ │
+│  │  │  Session Store  │  │  Configuration Store    │        │ │
+│  │  │  (SQLite/PG)    │  │  (JSON/KV)              │        │ │
+│  │  └─────────────────┘  └─────────────────────────┘        │ │
+│  └───────────────────────────────────────────────────────────┘ │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Core Components
+
+### Router Engine
+
+The Router Engine handles all incoming and outgoing message routing.
+
+<Table>
+  <thead>
+    <tr>
+      <th>Capability</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Message Routing</td>
+      <td>Directs messages to appropriate handlers based on channel, user, and context</td>
+    </tr>
+    <tr>
+      <td>Allowlist Filtering</td>
+      <td>Enforces channel-specific user allowlists for access control</td>
+    </tr>
+    <tr>
+      <td>Priority Queuing</td>
+      <td>Processes high-priority messages first during peak load</td>
+    </tr>
+    <tr>
+      <td>Retry Logic</td>
+      <td>Automatic retry with exponential backoff for failed deliveries</td>
+    </tr>
+  </tbody>
+</Table>
+
+### Session Manager
+
+The Session Manager maintains conversation state across all interactions.
+
+<SessionFeatures>
+  <Feature name="Context Preservation">
+    <p>Maintains conversation history and context window management.</p>
+  </Feature>
+  
+  <Feature name="Memory Integration">
+    <p>Persistent long-term memory with semantic search capabilities.</p>
+  </Feature>
+  
+  <Feature name="Multi-Channel Sessions">
+    <p>Seamless conversation continuation across different channels.</p>
+  </Feature>
+</SessionFeatures>
+
+### Plugin Loader
+
+The Plugin Loader manages dynamic extension loading.
+
+<PluginCapabilities>
+  <Capability>Hot-reload plugins without gateway restart</Capability>
+  <Capability>Sandboxed execution for security</Capability>
+  <Capability>Dependency resolution and version management</Capability>
+  <Capability>Built-in plugin marketplace integration</Capability>
+</PluginCapabilities>
+
+---
+
+## Configuration
+
+### Environment Variables
+
+<Table>
+  <thead>
+    <tr>
+      <th>Variable</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>GATEWAY_PORT</code></td>
+      <td>Port for Gateway HTTP server</td>
+      <td>Configurable (default in code)</td>
+    </tr>
+    <tr>
+      <td><code>GATEWAY_TOKEN</code></td>
+      <td>Admin authentication token</td>
+      <td>Auto-generated</td>
+    </tr>
+    <tr>
+      <td><code>GATEWAY_MODE</code></td>
+      <td>Operation mode: local or saas</td>
+      <td>local</td>
+    </tr>
+    <tr>
+      <td><code>DATABASE_URL</code></td>
+      <td>PostgreSQL connection string (SaaS mode)</td>
+      <td>None</td>
+    </tr>
+  </tbody>
+</Table>
+
+### CLI Configuration
+
+```bash
+# Start with custom port
+aeonsage gateway start --port 8080
+
+# Start in SaaS mode
+aeonsage gateway start --mode saas --db postgresql://localhost/aeonsage
+
+# Start with specific config file
+aeonsage gateway start --config /path/to/config.json
+```
+
+---
+
+## Health and Monitoring
+
+### Health Check Endpoints
+
+<Endpoints>
+  <Endpoint method="GET" path="/health">
+    <p>Basic health check, returns 200 if gateway is running.</p>
+  </Endpoint>
+  
+  <Endpoint method="GET" path="/health/ready">
+    <p>Readiness check, verifies all components are initialized.</p>
+  </Endpoint>
+  
+  <Endpoint method="GET" path="/health/live">
+    <p>Liveness check for Kubernetes probes.</p>
+  </Endpoint>
+  
+  <Endpoint method="GET" path="/metrics">
+    <p>Prometheus-compatible metrics endpoint.</p>
+  </Endpoint>
+</Endpoints>
+
+### Metrics Available
+
+<MetricsList>
+  <Metric name="aeonsage_messages_total">
+    <p>Total messages processed, labeled by channel and direction.</p>
+  </Metric>
+  
+  <Metric name="aeonsage_session_active">
+    <p>Number of currently active sessions.</p>
+  </Metric>
+  
+  <Metric name="aeonsage_provider_latency_seconds">
+    <p>AI provider response latency histogram.</p>
+  </Metric>
+  
+  <Metric name="aeonsage_gateway_memory_bytes">
+    <p>Current memory usage.</p>
+  </Metric>
+</MetricsList>
+
+---
+
+## Security
+
+### Authentication Methods
+
+<AuthMethods>
+  <Method name="Token Auth">
+    <p>Static token for CLI and simple integrations.</p>
+    <code>Authorization: Bearer YOUR_TOKEN</code>
+  </Method>
+  
+  <Method name="JWT Auth">
+    <p>JWT tokens for web UI and mobile apps.</p>
+    <code>Authorization: Bearer JWT_TOKEN</code>
+  </Method>
+  
+  <Method name="OAuth 2.0">
+    <p>OAuth integration for SaaS deployments (Google, GitHub, etc.).</p>
+  </Method>
+</AuthMethods>
+
+### Security Best Practices
+
+<Checklist>
+  <Item>Use HTTPS in production deployments</Item>
+  <Item>Rotate gateway tokens regularly</Item>
+  <Item>Configure allowlists for channel access</Item>
+  <Item>Enable audit logging for compliance</Item>
+  <Item>Use environment variables for secrets, not config files</Item>
+</Checklist>
+
+---
+
+## Scaling
+
+### Vertical Scaling
+
+For single-instance deployments, increase resources as needed:
+
+<ResourceTable>
+  <Resource usage="Light (1-10 users)" cpu="1 core" memory="1GB" storage="10GB" />
+  <Resource usage="Medium (10-100 users)" cpu="2 cores" memory="4GB" storage="50GB" />
+  <Resource usage="Heavy (100-1000 users)" cpu="4 cores" memory="8GB" storage="200GB" />
+</ResourceTable>
+
+### Horizontal Scaling
+
+For high-availability deployments:
+
+<Steps>
+  <Step number={1} title="Use PostgreSQL">
+    <p>Switch from SQLite to PostgreSQL for shared state.</p>
+  </Step>
+  
+  <Step number={2} title="Add Load Balancer">
+    <p>Place a load balancer in front of multiple gateway instances.</p>
+  </Step>
+  
+  <Step number={3} title="Configure Sticky Sessions">
+    <p>Use session affinity for WebSocket connections.</p>
+  </Step>
+  
+  <Step number={4} title="Scale Out">
+    <p>Add more gateway instances as traffic increases.</p>
+  </Step>
+</Steps>
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+<TroubleshootList>
+  <Issue name="Gateway won't start">
+    <p>Check if port is already in use: <code>lsof -i :GATEWAY_PORT</code></p>
+    <p>Verify Node.js version: <code>node --version</code> (requires 22+)</p>
+  </Issue>
+  
+  <Issue name="Channels not connecting">
+    <p>Verify channel credentials in configuration.</p>
+    <p>Check network connectivity to channel APIs.</p>
+    <p>Review gateway logs for error messages.</p>
+  </Issue>
+  
+  <Issue name="AI provider errors">
+    <p>Verify API key is valid and has credits.</p>
+    <p>Check rate limits for your provider plan.</p>
+    <p>Test with <code>aeonsage providers test openai</code>.</p>
+  </Issue>
+</TroubleshootList>
+
+### Log Analysis
+
+```bash
+# View recent logs
+aeonsage logs --tail 100
+
+# Filter by level
+aeonsage logs --level error
+
+# Filter by component
+aeonsage logs --component router
+```
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Channel Setup" icon="plug" href="/channels/overview">
+    <p>Connect your first messaging channel.</p>
+  </Card>
+  
+  <Card title="AI Providers" icon="cpu" href="/concepts/ai-providers">
+    <p>Configure AI model providers.</p>
+  </Card>
+</CardGroup>

@@ -1,0 +1,320 @@
+---
+title: "Docker Deployment"
+description: "Deploy AeonSage with Docker."
+---
+
+Run AeonSage in Docker for easy deployment and isolation.
+
+## Quick Start
+
+### Using Docker Run
+
+```bash
+# Pull the image
+docker pull aeonsage/gateway:latest
+
+# Run the container
+docker run -d \
+  --name aeonsage-gateway \
+  -p 18789:18789 \
+  -v aeonsage-data:/root/.aeonsage \
+  -e OPENAI_API_KEY=your-key-here \
+  aeonsage/gateway:latest
+```
+
+### Using Docker Compose
+
+Create `docker-compose.yml`:
+
+```yaml
+version: '3.8'
+
+services:
+  aeonsage:
+    image: aeonsage/gateway:latest
+    container_name: aeonsage-gateway
+    restart: unless-stopped
+    ports:
+      - "18789:18789"
+    volumes:
+      - ./config:/root/.aeonsage
+      - ./skills:/root/.aeonsage/skills
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GATEWAY_TOKEN=${GATEWAY_TOKEN}
+      - LOG_LEVEL=info
+```
+
+Start:
+
+```bash
+docker-compose up -d
+```
+
+## Configuration
+
+### Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `GATEWAY_TOKEN` | Admin token | (required) |
+| `OPENAI_API_KEY` | OpenAI API key | - |
+| `ANTHROPIC_API_KEY` | Anthropic API key | - |
+| `LOG_LEVEL` | Log verbosity | `info` |
+| `GATEWAY_HOST` | Bind address | `0.0.0.0` |
+| `GATEWAY_PORT` | Listen port | `18789` |
+
+### Volume Mounts
+
+| Mount Point | Description |
+|-------------|-------------|
+| `/root/.aeonsage` | Configuration and data |
+| `/root/.aeonsage/skills` | Custom skills |
+
+### Example with All Options
+
+```yaml
+version: '3.8'
+
+services:
+  aeonsage:
+    image: aeonsage/gateway:latest
+    container_name: aeonsage-gateway
+    restart: unless-stopped
+    ports:
+      - "18789:18789"
+    volumes:
+      - ./config:/root/.aeonsage
+      - ./skills:/root/.aeonsage/skills
+      - ./logs:/var/log/aeonsage
+    environment:
+      - GATEWAY_TOKEN=your-secure-token
+      - OPENAI_API_KEY=sk-your-key
+      - ANTHROPIC_API_KEY=sk-ant-your-key
+      - LOG_LEVEL=debug
+      - GATEWAY_HOST=0.0.0.0
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:18789/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+```
+
+## With Ollama
+
+Run AeonSage with local Ollama:
+
+```yaml
+version: '3.8'
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    
+  aeonsage:
+    image: aeonsage/gateway:latest
+    container_name: aeonsage-gateway
+    restart: unless-stopped
+    ports:
+      - "18789:18789"
+    volumes:
+      - ./config:/root/.aeonsage
+    environment:
+      - GATEWAY_TOKEN=your-token
+      - OLLAMA_HOST=http://ollama:11434
+    depends_on:
+      - ollama
+
+volumes:
+  ollama-data:
+```
+
+<Note type="info" title="GPU Support">
+For GPU acceleration with Ollama, add GPU configuration to the ollama service. See [Ollama Docker docs](https://github.com/ollama/ollama/blob/main/docs/docker.md).
+</Note>
+
+## With PostgreSQL
+
+For production multi-user deployments:
+
+```yaml
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: aeonsage-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=aeonsage
+      - POSTGRES_PASSWORD=secure-password
+      - POSTGRES_DB=aeonsage
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    
+  aeonsage:
+    image: aeonsage/gateway:latest
+    container_name: aeonsage-gateway
+    restart: unless-stopped
+    ports:
+      - "18789:18789"
+    environment:
+      - GATEWAY_TOKEN=your-token
+      - DATABASE_URL=postgresql://aeonsage:secure-password@postgres:5432/aeonsage
+    depends_on:
+      - postgres
+
+volumes:
+  postgres-data:
+```
+
+## With Reverse Proxy
+
+### Nginx
+
+```yaml
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: aeonsage-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - aeonsage
+  
+  aeonsage:
+    image: aeonsage/gateway:latest
+    container_name: aeonsage-gateway
+    restart: unless-stopped
+    expose:
+      - "18789"
+    environment:
+      - GATEWAY_TOKEN=your-token
+```
+
+### Caddy (Automatic HTTPS)
+
+```yaml
+version: '3.8'
+
+services:
+  caddy:
+    image: caddy:2
+    container_name: aeonsage-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+    depends_on:
+      - aeonsage
+  
+  aeonsage:
+    image: aeonsage/gateway:latest
+    container_name: aeonsage-gateway
+    restart: unless-stopped
+    expose:
+      - "18789"
+    environment:
+      - GATEWAY_TOKEN=your-token
+```
+
+## Health Checks
+
+```bash
+# Check container health
+docker ps
+
+# View health check logs
+docker inspect --format='{{json .State.Health}}' aeonsage-gateway | jq
+
+# Manual health check
+docker exec aeonsage-gateway curl -f http://localhost:18789/health
+```
+
+## Logs
+
+```bash
+# View logs
+docker logs aeonsage-gateway
+
+# Follow logs
+docker logs -f aeonsage-gateway
+
+# View last 100 lines
+docker logs --tail 100 aeonsage-gateway
+```
+
+## Updates
+
+```bash
+# Pull latest image
+docker pull aeonsage/gateway:latest
+
+# Restart with new image
+docker-compose down
+docker-compose up -d
+```
+
+## Troubleshooting
+
+<Accordion>
+  <AccordionItem title="Container won't start">
+    
+    **Check logs:**
+    ```bash
+    docker logs aeonsage-gateway
+    ```
+    
+    **Common issues:**
+    - Missing required environment variables
+    - Port already in use
+    - Volume permission issues
+    
+  </AccordionItem>
+  
+  <AccordionItem title="Cannot connect to Gateway">
+    
+    **Check:**
+    1. Container is running: `docker ps`
+    2. Port is mapped: `docker port aeonsage-gateway`
+    3. Firewall allows traffic
+    
+    **Test from inside container:**
+    ```bash
+    docker exec aeonsage-gateway curl http://localhost:18789/health
+    ```
+    
+  </AccordionItem>
+  
+  <AccordionItem title="Data persistence issues">
+    
+    Ensure volumes are correctly mounted:
+    ```bash
+    docker inspect aeonsage-gateway | jq '.[0].Mounts'
+    ```
+    
+  </AccordionItem>
+</Accordion>
+
+---
+
+## Next Steps
+
+Your Docker deployment is now running. For production environments, consider implementing monitoring and alerting to track system health, resource usage, and performance metrics. For large-scale deployments requiring high availability and auto-scaling, Kubernetes provides advanced orchestration capabilities.

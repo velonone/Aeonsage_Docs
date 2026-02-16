@@ -1,0 +1,387 @@
+---
+title: "Telegram Channel"
+description: "Connect AeonSage to Telegram for 24/7 AI assistant access."
+---
+
+Connect AeonSage to Telegram for instant access to your AI assistant from anywhere.
+
+## Overview
+
+<TelegramOverview>
+  The Telegram channel allows you to interact with AeonSage through a Telegram bot. Send messages to the bot and receive AI-powered responses in real-time.
+</TelegramOverview>
+
+### Features
+
+| Feature | Status |
+|---------|--------|
+| Send messages | ✅ |
+| Receive messages | ✅ |
+| Inline queries | ✅ |
+| File attachments | ✅ |
+| Voice messages | ✅ |
+| Group chats | ✅ |
+| Thread support | ✅ |
+
+## Quick Setup
+
+<Steps>
+  <Step>
+    **Create a Telegram Bot**
+    
+    1. Open Telegram and search for [@BotFather](https://t.me/botfather)
+    2. Send `/newbot`
+    3. Follow the prompts:
+       - Bot name: `AeonSage` (or your preferred name)
+       - Bot username: Must end with `_bot` (e.g., `my_aeon_bot`)
+    4. **Copy the bot token** (format: `123456789:ABCdefGhIjKlMnoPqRsTuVwXyZ`)
+    
+  </Step>
+  
+  <Step>
+    **Add Channel to AeonSage**
+    
+    ```bash
+    aeonsage channel add telegram --token 123456789:ABCdefGhIjKlMnoPqRsTuVwXyZ
+    ```
+    
+    Or add to `config.json`:
+    
+    ```json
+    {
+      "channels": {
+        "telegram": {
+          "enabled": true,
+          "token": "123456789:ABCdefGhIjKlMnoPqRsTuVwXyZ"
+        }
+      }
+    }
+    ```
+    
+  </Step>
+  
+  <Step>
+    **Start the Gateway**
+    
+    ```bash
+    aeonsage gateway start
+    ```
+    
+    You should see:
+    
+    ```
+    [INFO] Telegram channel connected
+    [INFO] Bot username: @your_aeon_bot
+    ```
+    
+  </Step>
+  
+  <Step>
+    **Get Your Access Code**
+    
+    Send `/start` to your bot on Telegram. It will respond with an access code prompt.
+    
+    1. Check Gateway logs for the access code:
+       ```bash
+       aeonsage logs --channel telegram
+       ```
+    
+    2. Send the access code to the bot
+    
+    3. You're authenticated! Start chatting with your AI.
+    
+  </Step>
+</Steps>
+
+## Configuration
+
+### Full Configuration Reference
+
+```json
+{
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "token": "${TELEGRAM_BOT_TOKEN}",
+      "allowedUsers": [],
+      "allowedGroups": [],
+      "commands": {
+        "enabled": true,
+        "prefix": "/"
+      },
+      "features": {
+        "voice": true,
+        "files": true,
+        "inline": true
+      },
+      "rateLimit": {
+        "windowMs": 60000,
+        "max": 30
+      }
+    }
+  }
+}
+```
+
+### Configuration Options
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `token` | string | required | Bot token from BotFather |
+| `allowedUsers` | array | [] | Whitelisted user IDs (empty = all allowed) |
+| `allowedGroups` | array | [] | Whitelisted group IDs |
+| `commands.enabled` | boolean | true | Enable slash commands |
+| `commands.prefix` | string | "/" | Command prefix |
+| `features.voice` | boolean | true | Process voice messages |
+| `features.files` | boolean | true | Process file attachments |
+| `rateLimit.max` | number | 30 | Max messages per minute |
+
+## Usage
+
+### Direct Messages
+
+Send any message to your bot:
+
+```
+You: What's the weather today?
+Bot: I don't have real-time weather data, but I can help you check weather websites...
+```
+
+### Slash Commands
+
+| Command | Description |
+|---------|-------------|
+| `/start` | Start the bot and authenticate |
+| `/help` | Show available commands |
+| `/reset` | Reset conversation context |
+| `/model [name]` | Switch AI model |
+| `/status` | Show session status |
+
+### Voice Messages
+
+<Note type="info" title="Voice Processing">
+Voice messages are automatically transcribed using Whisper (if enabled) and processed as text.
+</Note>
+
+To enable voice processing:
+
+```json
+{
+  "channels": {
+    "telegram": {
+      "features": {
+        "voice": true,
+        "voiceModel": "whisper-1"
+      }
+    }
+  }
+}
+```
+
+### Group Chats
+
+To use in groups:
+
+1. **Add bot to group**
+2. **Configure group permissions**:
+   ```json
+   {
+     "allowedGroups": [-1001234567890]
+   }
+   ```
+3. **Mention the bot** to trigger responses:
+   ```
+   @your_aeon_bot What do you think about this?
+   ```
+
+<Note type="warning" title="Group Privacy">
+In groups, the bot only responds when mentioned. Set group privacy to "Disabled" in BotFather to allow the bot to see all messages.
+</Note>
+
+## Security
+
+### Access Control
+
+<Accordion>
+  <AccordionItem title="User Whitelist">
+    
+    Restrict access to specific Telegram users:
+    
+    ```json
+    {
+      "allowedUsers": [123456789, 987654321]
+    }
+    ```
+    
+    Get your Telegram user ID:
+    1. Message [@userinfobot](https://t.me/userinfobot)
+    2. It will reply with your user ID
+    
+  </AccordionItem>
+  
+  <AccordionItem title="Group Whitelist">
+    
+    Restrict to specific groups:
+    
+    ```json
+    {
+      "allowedGroups": [-1001234567890]
+    }
+    ```
+    
+  </AccordionItem>
+  
+  <AccordionItem title="Admin-Only Mode">
+    
+    Allow only admin commands:
+    
+    ```json
+    {
+      "adminOnly": true,
+      "adminUsers": [123456789]
+    }
+    ```
+    
+  </AccordionItem>
+</Accordion>
+
+### Webhook vs Polling
+
+<Tabs>
+  <Tab title="Webhook (Recommended)">
+    
+    More efficient for production. Requires HTTPS.
+    
+    ```json
+    {
+      "telegram": {
+        "webhook": {
+          "enabled": true,
+          "url": "https://your-domain.com/telegram/webhook",
+          "port": 8443
+        }
+      }
+    }
+    ```
+    
+  </Tab>
+  <Tab title="Long Polling">
+    
+    Simpler setup, works behind NAT. Default mode.
+    
+    ```json
+    {
+      "telegram": {
+        "polling": {
+          "enabled": true,
+          "interval": 1000
+        }
+      }
+    }
+    ```
+    
+  </Tab>
+</Tabs>
+
+## Troubleshooting
+
+<Accordion>
+  <AccordionItem title="Bot not responding">
+    
+    **Check:**
+    
+    1. Bot token is correct
+    2. Gateway is running
+    3. Channel is enabled
+    4. You're whitelisted (if whitelist is set)
+    
+    ```bash
+    # Check channel status
+    aeonsage channel status telegram
+    
+    # View logs
+    aeonsage logs --channel telegram --follow
+    ```
+    
+  </AccordionItem>
+  
+  <AccordionItem title="Rate limit errors">
+    
+    Telegram has API limits. If you see 429 errors:
+    
+    ```json
+    {
+      "rateLimit": {
+        "windowMs": 60000,
+        "max": 20
+      }
+    }
+    ```
+    
+  </AccordionItem>
+  
+  <AccordionItem title="Voice transcription not working">
+    
+    Ensure Whisper is configured:
+    
+    ```bash
+    # Set OpenAI API key for Whisper
+    export OPENAI_API_KEY=sk-your-key
+    
+    # Or use local Whisper
+    aeonsage config set telegram.voiceModel whisper-local
+    ```
+    
+  </AccordionItem>
+</Accordion>
+
+## Advanced
+
+### Custom Commands
+
+Define custom commands:
+
+```json
+{
+  "commands": {
+    "custom": {
+      "weather": {
+        "description": "Get weather info",
+        "handler": "skills/weather"
+      },
+      "translate": {
+        "description": "Translate text",
+        "handler": "skills/translator"
+      }
+    }
+  }
+}
+```
+
+### Inline Mode
+
+Enable inline queries:
+
+1. Enable inline mode in [@BotFather](https://t.me/botfather):
+   ```
+   /setinline
+   ```
+2. Configure in AeonSage:
+   ```json
+   {
+     "features": {
+       "inline": true
+     }
+   }
+   ```
+
+Users can now query your bot from any chat:
+```
+@your_aeon_bot tell me a joke
+```
+
+---
+
+## Next Steps
+
+Now that you have Telegram configured, you can explore additional messaging channels to expand your AeonSage deployment. Other popular channels include Discord for community servers and WhatsApp for personal messaging. Check the channels documentation to see all available integration options.

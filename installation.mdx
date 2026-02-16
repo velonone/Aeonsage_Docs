@@ -1,0 +1,305 @@
+---
+title: "Installation"
+description: "Install AeonSage on your platform with your preferred method."
+---
+
+Choose your installation method based on how you want to use AeonSage.
+
+## Installation Methods
+
+<CardGroup cols={3}>
+  <Card title="CLI (npm/pnpm)" icon="terminal" href="#cli-installation">
+    Command-line for developers and servers.
+  </Card>
+  <Card title="Docker" icon="container" href="#docker-installation">
+    Containerized deployment.
+  </Card>
+  <Card title="From Source" icon="code" href="#build-from-source">
+    Build from source code.
+  </Card>
+</CardGroup>
+
+---
+
+## CLI Installation
+
+Install the AeonSage CLI for command-line operation and Gateway server.
+
+### Using pnpm (Recommended)
+
+```bash
+pnpm add -g aeonsage
+```
+
+### Using npm
+
+```bash
+npm install -g aeonsage
+```
+
+### Using yarn
+
+```bash
+yarn global add aeonsage
+```
+
+### Verify Installation
+
+```bash
+aeonsage --version
+# aeonsage/2026.2.15
+
+aeonsage --help
+```
+
+### Quick Start with CLI
+
+```bash
+# Initialize configuration
+aeonsage init
+
+# Start the Gateway
+aeonsage gateway start
+
+# Open in browser (default port)
+open http://localhost:3000
+```
+
+---
+
+## Docker Installation
+
+Run AeonSage in a container for isolated, reproducible deployments.
+
+### Pull Image
+
+```bash
+docker pull aeonsage/gateway:latest
+```
+
+### Quick Run
+
+```bash
+docker run -d \
+  --name aeonsage-gateway \
+  -p 18789:18789 \
+  -v aeonsage-data:/root/.aeonsage \
+  -e GATEWAY_TOKEN=your-secure-token \
+  -e OPENAI_API_KEY=your-key \
+  aeonsage/gateway:latest
+```
+
+### Docker Compose
+
+Create `docker-compose.yml`:
+
+```yaml
+version: '3.8'
+
+services:
+  aeonsage:
+    image: aeonsage/gateway:latest
+    container_name: aeonsage-gateway
+    restart: unless-stopped
+    ports:
+      - "18789:18789"
+    volumes:
+      - ./config:/root/.aeonsage
+      - ./skills:/root/.aeonsage/skills
+    environment:
+      - GATEWAY_TOKEN=${GATEWAY_TOKEN}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - LOG_LEVEL=info
+```
+
+Start:
+
+```bash
+docker-compose up -d
+```
+
+<Note type="info" title="Docker Documentation">
+See [Docker Deployment](/self-hosting/docker) for advanced Docker configurations including PostgreSQL, Ollama, and reverse proxy setup.
+</Note>
+
+---
+
+## Build from Source
+
+For development or custom builds.
+
+### Prerequisites
+
+- **Node.js 22+**
+- **pnpm** (recommended) or npm
+- **Git**
+
+### Build Steps
+
+```bash
+# Clone the repository
+git clone https://github.com/aeonsage/aeonsage.git
+cd aeonsage
+
+# Install dependencies
+pnpm install
+
+# Build the project
+pnpm build
+
+# Run locally
+pnpm aeonsage gateway start
+```
+
+### Development Mode
+
+```bash
+# Run in development mode with hot reload
+pnpm dev
+```
+
+<Note type="info" title="Contributing">
+See [CONTRIBUTING.md](https://github.com/aeonsage/aeonsage/blob/main/CONTRIBUTING.md) for development guidelines.
+</Note>
+
+---
+
+## Platform-Specific Notes
+
+### macOS
+
+<Accordion>
+  <AccordionItem title="Apple Silicon vs Intel">
+    
+    Determine your Mac's architecture:
+    
+    ```bash
+    uname -m
+    # arm64 = Apple Silicon (M1/M2/M3)
+    # x86_64 = Intel
+    ```
+    
+    Download the matching DMG file.
+    
+  </AccordionItem>
+  
+  <AccordionItem title="Permissions">
+    
+    macOS may request permissions for:
+    
+    - **Accessibility**: For keyboard shortcuts
+    - **Screen Recording**: For screenshot tools
+    - **Full Disk Access**: For file operations
+    
+    Grant only permissions you need.
+    
+  </AccordionItem>
+</Accordion>
+
+### Windows
+
+<Accordion>
+  <AccordionItem title="Antivirus Exclusion">
+    
+    Some antivirus software may flag AeonSage. Add an exclusion if needed:
+    
+    1. Open Windows Security
+    2. Go to **Virus & threat protection → Manage settings**
+    3. Add exclusion for the AeonSage folder
+    
+  </AccordionItem>
+  
+  <AccordionItem title="WSL2 Integration">
+    
+    AeonSage runs on Windows natively. For WSL2:
+    
+    ```bash
+    # In WSL2
+    npm install -g aeonsage
+    aeonsage gateway start --host 0.0.0.0
+    
+    # Access from Windows (check actual port in Gateway logs)
+    # http://localhost:PORT
+    ```
+    
+  </AccordionItem>
+</Accordion>
+
+### Linux
+
+<Accordion>
+  <AccordionItem title="System Dependencies">
+    
+    For Debian/Ubuntu:
+    
+    ```bash
+    sudo apt-get update
+    sudo apt-get install -y libwebkit2gtk-4.1-dev \
+      build-essential \
+      curl \
+      wget \
+      libssl-dev \
+      libgtk-3-dev \
+      libayatana-appindicator3-dev \
+      librsvg2-dev
+    ```
+    
+  </AccordionItem>
+  
+  <AccordionItem title="Headless Server">
+    
+    For servers without GUI:
+    
+    ```bash
+    # Install CLI only
+    npm install -g aeonsage
+    
+    # Start in background
+    aeonsage gateway start --daemon
+    ```
+    
+  </AccordionItem>
+</Accordion>
+
+---
+
+## Coming Soon
+
+<CardGroup cols={2}>
+  <Card title="iOS App" icon="apple" href="#">
+    Native iOS application for iPhone and iPad. **Coming 2026.**
+  </Card>
+  <Card title="Android App" icon="android" href="#">
+    Native Android application. **Coming 2026.**
+  </Card>
+</CardGroup>
+
+<Note type="info" title="Beta Access">
+Join our [Discord](https://discord.gg/aeonsage) for early access to mobile app betas.
+</Note>
+
+---
+
+## Next Steps
+
+<StepCards>
+  <StepCard
+    step="1"
+    title="Configure"
+    description="Set up AI providers and channels"
+    href="/configuration/overview"
+  />
+  <StepCard
+    step="2"
+    title="Add Channels"
+    description="Connect Telegram, Discord, or WhatsApp"
+    href="/channels/overview"
+  />
+  <StepCard
+    step="3"
+    title="Install Skills"
+    description="Extend functionality with skills"
+    href="/concepts/skills"
+  />
+</StepCards>

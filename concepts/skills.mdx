@@ -1,0 +1,342 @@
+---
+title: "Skills"
+description: "Extend AeonSage capabilities with skills - modular tools and actions."
+---
+
+# Skills
+
+Skills are modular extensions that give your AeonSage agent new capabilities. From web search to file management, skills enable your AI to take action beyond conversation.
+
+---
+
+## What Are Skills?
+
+Skills are self-contained modules that define actions your agent can perform. Each skill:
+
+- ✓ Defines available actions and their parameters
+- ✓ Handles execution and response formatting
+- ✓ Can be enabled/disabled per deployment
+- ✓ Supports permission controls and auditing
+
+---
+
+## Built-in Skills
+
+### Core Skills
+
+| Skill | Actions | Description |
+|-------|---------|-------------|
+| **web** | search, fetch, screenshot | Web browsing and search capabilities |
+| **shell** | exec | Execute shell commands (with restrictions) |
+| **files** | read, write, list, delete | File system operations |
+| **memory** | remember, recall, forget | Long-term memory management |
+| **calendar** | create, list, update, delete | Calendar event management |
+| **email** | send, list, read | Email operations |
+
+### Extension Skills
+
+<CardGroup cols={2}>
+  <Card title="Spotify Player" icon="spotify">
+    Control Spotify playback
+
+    `@aeonsage/skill-spotify`
+  </Card>
+
+  <Card title="Things 3" icon="check-circle">
+    Things 3 integration for macOS
+
+    `@aeonsage/skill-things`
+  </Card>
+
+  <Card title="Trello" icon="trello">
+    Trello board management
+
+    `@aeonsage/skill-trello`
+  </Card>
+
+  <Card title="Weather" icon="cloud-sun">
+    Weather information lookup
+
+    `@aeonsage/skill-weather`
+  </Card>
+</CardGroup>
+
+---
+
+## Skill Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      Skill Execution Flow                        │
+│                                                                 │
+│  ┌──────────┐     ┌──────────┐     ┌──────────┐               │
+│  │   AI     │     │  Skill   │     │  Skill   │               │
+│  │  Model   │────▶│  Router  │────▶│  Runner  │               │
+│  └──────────┘     └──────────┘     └──────────┘               │
+│       │                │                │                       │
+│       │                │                ▼                       │
+│       │                │          ┌──────────┐                 │
+│       │                │          │  Action  │                 │
+│       │                │          │ Handler  │                 │
+│       │                │          └──────────┘                 │
+│       │                │                │                       │
+│       │                ▼                ▼                       │
+│       │          ┌──────────────────────────┐                  │
+│       │          │    Permission Check      │                  │
+│       │          │    Audit Logging         │                  │
+│       │          │    Rate Limiting         │                  │
+│       │          └──────────────────────────┘                  │
+│       │                                                   │
+│       ▼                                                   │
+│  ┌──────────┐                                            │
+│  │ Response │◀───────────────────────────────────────────┘
+│  │  to AI   │
+│  └──────────┘
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Creating Custom Skills
+
+### Skill Structure
+
+```
+my-skill/
+├── SKILL.md          # Skill metadata and documentation
+├── package.json      # NPM package definition
+├── src/
+│   ├── index.ts      # Skill entry point
+│   └── actions/      # Action implementations
+└── scripts/          # Optional helper scripts
+```
+
+### SKILL.md Format
+
+```markdown
+---
+name: my-skill
+version: 1.0.0
+description: A custom skill for AeonSage
+author: Your Name
+---
+
+# My Skill
+
+Description of what this skill does.
+
+## Actions
+
+### my_action
+
+Description of the action.
+
+**Parameters:**
+- `param1` (string, required): Description
+- `param2` (number, optional): Description
+
+**Returns:**
+- Result description
+```
+
+### Implementation Example
+
+```typescript
+// src/index.ts
+import { defineSkill } from '@aeonsage/plugin-sdk';
+
+export default defineSkill({
+  name: 'my-skill',
+  actions: {
+    my_action: async (params, context) => {
+      const { param1, param2 } = params;
+      
+      // Your action logic here
+      const result = await doSomething(param1, param2);
+      
+      return {
+        success: true,
+        data: result,
+      };
+    },
+  },
+});
+```
+
+---
+
+## Skill Configuration
+
+### Enabling Skills
+
+```bash
+# List available skills
+aeonsage skills list
+
+# Enable a skill
+aeonsage skills enable web
+
+# Disable a skill
+aeonsage skills disable shell
+
+# Install extension skill
+aeonsage skills install @aeonsage/skill-weather
+```
+
+### Configuration File
+
+```json
+{
+  "skills": {
+    "enabled": ["web", "memory", "files"],
+    "disabled": ["shell"],
+    "extensions": [
+      {
+        "name": "@aeonsage/skill-weather",
+        "config": {
+          "apiKey": "YOUR_API_KEY"
+        }
+      }
+    ]
+  }
+}
+```
+
+---
+
+## Permissions and Security
+
+### Permission Levels
+
+| Level | Capabilities |
+|-------|--------------|
+| **read** | Can only read data, no modifications |
+| **write** | Can create and modify data |
+| **execute** | Can execute commands and actions |
+| **admin** | Full access including configuration |
+
+### Permission Configuration
+
+```json
+{
+  "skills": {
+    "permissions": {
+      "shell": {
+        "level": "execute",
+        "restricted": true,
+        "allowlist": ["ls", "cat", "grep"],
+        "denylist": ["rm -rf", "sudo"]
+      },
+      "files": {
+        "level": "write",
+        "basePath": "/home/user/aeonsage-files",
+        "maxFileSize": "10MB"
+      }
+    }
+  }
+}
+```
+
+---
+
+## Skill Development Best Practices
+
+<AccordionGroup>
+  <Accordion title="Input Validation">
+    Always validate and sanitize all input parameters.
+
+    ```typescript
+    if (!isValidPath(params.path)) throw new Error('Invalid path');
+    ```
+  </Accordion>
+
+  <Accordion title="Error Handling">
+    Provide clear, actionable error messages.
+
+    ```typescript
+    throw new SkillError('File not found', { code: 'NOT_FOUND' });
+    ```
+  </Accordion>
+
+  <Accordion title="Rate Limiting">
+    Implement rate limiting for expensive operations to prevent abuse and ensure fair resource allocation.
+  </Accordion>
+
+  <Accordion title="Audit Logging">
+    Log all actions for security auditing and compliance tracking.
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Monitoring Skills
+
+### Skill Metrics
+
+```bash
+# View skill usage statistics
+aeonsage skills stats
+
+# View skill errors
+aeonsage skills errors
+
+# Monitor skill performance
+aeonsage skills monitor
+```
+
+### Health Checks
+
+```bash
+# Check all skills health
+aeonsage skills health
+
+# Check specific skill
+aeonsage skills health web
+```
+
+---
+
+## Troubleshooting
+
+### Common Issues
+
+<AccordionGroup>
+  <Accordion title="Skill not loading">
+    **Troubleshooting steps:**
+
+    1. Check skill is properly installed:
+       ```bash
+       aeonsage skills list
+       ```
+    2. Verify skill is enabled in configuration
+    3. Check for dependency errors in logs
+  </Accordion>
+
+  <Accordion title="Action permission denied">
+    **Possible causes:**
+
+    - Permission level is insufficient
+    - Allowlist/denylist configuration blocks the action
+    - User doesn't have necessary role
+
+    **Solution:** Review permission configuration and user roles.
+  </Accordion>
+
+  <Accordion title="Action timeout">
+    **Solutions:**
+
+    1. Increase action timeout in configuration
+    2. Optimize skill implementation for better performance
+    3. Check for network issues if using external API
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Next Steps
+
+Skills extend AeonSage's capabilities with custom actions and integrations. To learn more about developing and using skills:
+
+- Review the skill structure and implementation examples above
+- Check the built-in skills section for reference implementations
+- Explore the configuration options for enabling and managing skills

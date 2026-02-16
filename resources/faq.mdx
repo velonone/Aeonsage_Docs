@@ -1,0 +1,374 @@
+---
+title: "FAQ"
+description: "Frequently asked questions about AeonSage."
+---
+
+Find answers to commonly asked questions about AeonSage.
+
+## General
+
+<AccordionGroup>
+  <Accordion title="What is AeonSage?">
+    
+    AeonSage is a self-hosted AI orchestration platform that connects AI models, messaging channels, and tools in a unified interface. It allows you to:
+    
+    - Use multiple AI providers (OpenAI, Anthropic, local models)
+    - Access your AI through Telegram, Discord, WhatsApp, and more
+    - Maintain full control over your data
+    
+  </Accordion>
+
+  <Accordion title="Is AeonSage free?">
+    
+    **Yes!** AeonSage is open source under the AGPL v3 license.
+    
+    - **Free tier**: Self-hosted, unlimited usage, all core features
+    - **Pro tier**: Cloud hosting, advanced features, priority support
+    
+    See [Pricing](https://aeonsage.org/pricing) for details.
+    
+  </Accordion>
+
+  <Accordion title="What's the difference between OSS and SaaS?">
+    
+    | Feature | OSS (Self-Hosted) | SaaS (Cloud) |
+    |---------|-------------------|--------------|
+    | Hosting | Your server | Our cloud |
+    | Users | Single user | Multi-user |
+    | Cost | Free | Subscription |
+    | Support | Community | Priority |
+    
+  </Accordion>
+
+  <Accordion title="Can I use local AI models?">
+    
+    **Yes!** AeonSage has first-class support for local models via Ollama:
+    
+    ```bash
+    # Install Ollama
+    curl -fsSL https://ollama.ai/install.sh | sh
+    
+    # Pull a model
+    ollama pull llama3.2
+    
+    # AeonSage auto-detects Ollama
+    aeonsage gateway start
+    ```
+    
+    Local models work offline and keep your data completely private.
+    
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Installation
+
+<AccordionGroup>
+  <Accordion title="What are the system requirements?">
+
+    **Minimum:**
+    - 2 CPU cores
+    - 4 GB RAM
+    - 1 GB storage
+    - Node.js 22+
+
+    **For local AI models:**
+    - 8+ GB RAM for 7B models
+    - 16+ GB RAM for 13B models
+    - GPU recommended for best performance
+
+  </Accordion>
+
+  <Accordion title="How do I update AeonSage?">
+
+    **Desktop App:**
+    - Automatic updates (Settings → About → Check for Updates)
+
+    **npm:**
+    ```bash
+    npm update -g aeonsage
+    ```
+
+    **Docker:**
+    ```bash
+    docker pull aeonsage/gateway:latest
+    docker-compose up -d
+    ```
+
+  </Accordion>
+
+  <Accordion title="Can I run AeonSage on Raspberry Pi?">
+
+    **Yes!** AeonSage runs on ARM-based devices including Raspberry Pi 4/5.
+
+    ```bash
+    # Install Node.js 22 on Raspberry Pi
+    curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+    sudo apt-get install -y nodejs
+
+    # Install AeonSage
+    npm install -g aeonsage
+    ```
+
+    <Info>
+    **Performance Tip:** For local AI models on Pi, use quantized models (e.g., `llama3.2:1b`) for acceptable performance.
+    </Info>
+
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Configuration
+
+<AccordionGroup>
+  <Accordion title="Where is the configuration file?">
+
+    The configuration file is located at:
+
+    - **Linux/macOS**: `~/.aeonsage/config.json`
+    - **Windows**: `%USERPROFILE%\.aeonsage\config.json`
+
+    You can also use environment variables:
+
+    ```bash
+    export OPENAI_API_KEY=sk-your-key
+    export GATEWAY_PORT=8080
+    aeonsage gateway start
+    ```
+
+  </Accordion>
+
+  <Accordion title="How do I add a new AI provider?">
+
+    1. **Get API key** from the provider (OpenAI, Anthropic, etc.)
+    2. **Set environment variable**:
+       ```bash
+       export ANTHROPIC_API_KEY=sk-ant-your-key
+       ```
+    3. **Or add to config.json**:
+       ```json
+       {
+         "providers": {
+           "anthropic": {
+             "apiKey": "${ANTHROPIC_API_KEY}"
+           }
+         }
+       }
+       ```
+    4. **Restart Gateway**
+
+  </Accordion>
+
+  <Accordion title="How do I enable rate limiting?">
+
+    Add to `config.json`:
+
+    ```json
+    {
+      "rateLimit": {
+        "enabled": true,
+        "windowMs": 60000,
+        "maxRequests": 60
+      }
+    }
+    ```
+
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Channels
+
+<AccordionGroup>
+  <Accordion title="How do I connect Telegram?">
+
+    1. **Create a bot** via [@BotFather](https://t.me/botfather)
+    2. **Copy the bot token**
+    3. **Run setup**:
+       ```bash
+       aeonsage channel add telegram --token YOUR_BOT_TOKEN
+       ```
+    4. **Get your access code** from the Gateway logs
+
+    See [Telegram Channel](/channels/telegram) for detailed setup.
+
+  </Accordion>
+
+  <Accordion title="How do I connect Discord?">
+
+    1. **Create a Discord application** at [Discord Developer Portal](https://discord.com/developers/applications)
+    2. **Create a bot** and copy the token
+    3. **Invite bot to your server** with OAuth2 URL
+    4. **Run setup**:
+       ```bash
+       aeonsage channel add discord --token YOUR_BOT_TOKEN --clientId YOUR_CLIENT_ID
+       ```
+
+    See [Discord Channel](/channels/discord) for detailed setup.
+
+  </Accordion>
+
+  <Accordion title="Can I use multiple channels simultaneously?">
+
+    **Yes!** You can connect as many channels as you need. AeonSage routes messages based on the channel source while maintaining a unified context.
+
+    ```bash
+    # List active channels
+    aeonsage channel list
+
+    # Add multiple channels
+    aeonsage channel add telegram --token TOKEN_1
+    aeonsage channel add discord --token TOKEN_2
+    aeonsage channel add whatsapp  # Interactive setup
+    ```
+
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Privacy & Security
+
+<AccordionGroup>
+  <Accordion title="Does AeonSage send my data to external servers?">
+
+    **Only if you configure it to:**
+
+    - **AI providers**: If using OpenAI/Anthropic, prompts go to their APIs
+    - **Channels**: Messages are sent to Telegram/Discord/etc.
+    - **License validation**: Pro features check license with `license.aeonsage.org`
+
+    **For complete privacy:**
+    - Use **Ollama** for local AI (no external API calls)
+    - Use **iMessage** or **Signal** for end-to-end encrypted channels
+    - Disable telemetry in settings
+
+  </Accordion>
+
+  <Accordion title="How do I delete my data?">
+
+    **Self-hosted:**
+    ```bash
+    # Delete all data
+    rm -rf ~/.aeonsage
+    ```
+
+    **SaaS:**
+    - Go to Settings → Account → Delete Account
+    - All your data is permanently deleted within 24 hours
+
+  </Accordion>
+
+  <Accordion title="Is AeonSage GDPR compliant?">
+
+    **Self-hosted deployments** can be configured for GDPR compliance:
+
+    - Data minimization (only necessary data stored)
+    - Right to access (export all data)
+    - Right to erasure (delete all data)
+    - Data portability (standard export formats)
+
+    See [Security Overview](/security/overview) for details.
+
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Gateway won't start">
+
+    **Check common issues:**
+
+    1. **Port in use:**
+       ```bash
+       aeonsage gateway start --port 8080
+       ```
+
+    2. **Missing configuration:**
+       ```bash
+       aeonsage init
+       ```
+
+    3. **Node.js version:**
+       ```bash
+       node --version  # Should be 22+
+       ```
+
+    4. **Check logs:**
+       ```bash
+       aeonsage logs --follow
+       ```
+
+  </Accordion>
+
+  <Accordion title="AI responses are slow">
+
+    **Possible causes:**
+
+    1. **Local model performance**: Try a smaller model or use cloud API
+    2. **Network latency**: Check connection to AI provider
+    3. **Rate limiting**: You may be hitting API limits
+    4. **Memory pressure**: Check system RAM usage
+
+    **Solutions:**
+
+    ```bash
+    # Use smaller local model
+    ollama pull llama3.2:1b
+
+    # Check model status
+    aeonsage model status
+
+    # View metrics
+    aeonsage metrics
+    ```
+
+  </Accordion>
+
+  <Accordion title="Channel disconnected unexpectedly">
+
+    **Troubleshooting steps:**
+
+    1. **Check channel status:**
+       ```bash
+       aeonsage channel status
+       ```
+
+    2. **Reconnect:**
+       ```bash
+       aeonsage channel reconnect telegram
+       ```
+
+    3. **Check logs:**
+       ```bash
+       aeonsage logs --channel telegram
+       ```
+
+    4. **Verify credentials:**
+       - Bot token may have been revoked
+       - Check OAuth expiration
+
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Still Have Questions?
+
+<CardGroup cols={3}>
+  <Card title="Discord" icon="discord" href="https://discord.gg/aeonsage">
+    Join our community for help
+  </Card>
+  <Card title="GitHub Discussions" icon="github" href="https://github.com/aeonsage/aeonsage/discussions">
+    Ask questions and share ideas
+  </Card>
+  <Card title="Email Support" icon="envelope" href="mailto:support@aeonsage.org">
+    Direct support for Pro users
+  </Card>
+</CardGroup>

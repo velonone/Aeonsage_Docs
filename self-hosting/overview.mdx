@@ -1,0 +1,190 @@
+---
+title: "Self-Hosting Overview"
+description: "Deploy AeonSage on your own infrastructure."
+---
+
+Deploy and manage AeonSage on your own servers for complete control over your data and infrastructure.
+
+## Why Self-Host?
+
+<FeatureCardGroup>
+  <FeatureCard
+    title="Data Sovereignty"
+    icon="shield"
+    description="Your data stays on your servers. Full control over data retention and access."
+  />
+  <FeatureCard
+    title="Privacy"
+    icon="lock"
+    description="No data leaves your infrastructure. Essential for regulated industries."
+  />
+  <FeatureCard
+    title="Customization"
+    icon="sliders"
+    description="Modify and extend AeonSage to fit your needs. Full source code access."
+  />
+  <FeatureCard
+    title="No Vendor Lock-in"
+    icon="key"
+    description="Own your infrastructure. No dependency on external services."
+  />
+</FeatureCardGroup>
+
+## Deployment Options
+
+<CardGroup cols={2}>
+  <Card title="Docker" icon="container" href="/self-hosting/docker">
+    Quick setup with Docker or Docker Compose. Best for most deployments.
+  </Card>
+  <Card title="Bare Metal" icon="server" href="/installation">
+    Direct installation on Linux servers. Maximum control.
+  </Card>
+</CardGroup>
+
+## Requirements
+
+### Minimum Requirements
+
+| Resource | Requirement |
+|----------|-------------|
+| **CPU** | 2 cores |
+| **RAM** | 4 GB |
+| **Storage** | 20 GB SSD |
+| **Network** | 100 Mbps |
+| **OS** | Ubuntu 20.04+, Debian 11+, or RHEL 8+ |
+
+### Recommended for Production
+
+| Resource | Requirement |
+|----------|-------------|
+| **CPU** | 4+ cores |
+| **RAM** | 8+ GB |
+| **Storage** | 100 GB SSD |
+| **Network** | 1 Gbps |
+| **Database** | PostgreSQL 15+ |
+
+<Note type="warning" title="Local Models">
+If running local AI models (Ollama):
+- Add 8+ GB RAM per model
+- GPU recommended for better performance
+- Consider dedicated GPU instances
+</Note>
+
+## Architecture Options
+
+### Single Server
+
+Simplest deployment for small teams or personal use.
+
+```
+┌─────────────────────────────────────────┐
+│            Single Server                │
+├─────────────────────────────────────────┤
+│                                         │
+│  ┌──────────────────────────────────┐   │
+│  │        AeonSage Gateway          │   │
+│  │   (HTTP + WebSocket + Storage)   │   │
+│  └──────────────────────────────────┘   │
+│                                         │
+│  ┌──────────────────────────────────┐   │
+│  │      SQLite + sqlite-vec         │   │
+│  └──────────────────────────────────┘   │
+│                                         │
+└─────────────────────────────────────────┘
+```
+
+### High Availability
+
+For production workloads requiring uptime guarantees.
+
+```
+                      ┌─────────────┐
+                      │Load Balancer│
+                      └──────┬──────┘
+                             │
+          ┌──────────────────┼──────────────────┐
+          │                  │                  │
+          ▼                  ▼                  ▼
+    ┌───────────┐      ┌───────────┐      ┌───────────┐
+    │ Gateway 1 │      │ Gateway 2 │      │ Gateway 3 │
+    └─────┬─────┘      └─────┬─────┘      └─────┬─────┘
+          │                  │                  │
+          └──────────────────┼──────────────────┘
+                             │
+                      ┌──────▼──────┐
+                      │ PostgreSQL  │
+                      │   Primary   │
+                      └──────┬──────┘
+                             │
+                    ┌────────┴────────┐
+                    │                 │
+             ┌──────▼──────┐   ┌──────▼──────┐
+             │  Replica 1  │   │  Replica 2  │
+             └─────────────┘   └─────────────┘
+```
+
+## Security Considerations
+
+<Accordion>
+  <AccordionItem title="Network Security">
+    
+    - Use HTTPS/TLS for all external traffic
+    - Restrict database access to Gateway instances only
+    - Use VPN or private networking for inter-service communication
+    - Enable firewall rules to limit port exposure
+    
+  </AccordionItem>
+  <AccordionItem title="Authentication">
+    
+    - Generate strong admin tokens (32+ characters)
+    - Use environment variables for secrets
+    - Rotate tokens periodically
+    - Enable rate limiting on public endpoints
+    
+  </AccordionItem>
+  <AccordionItem title="Data Protection">
+    
+    - Enable encryption at rest for databases
+    - Regular backups with encrypted storage
+    - Audit logging for compliance
+    - Data retention policies
+    
+  </AccordionItem>
+</Accordion>
+
+## Cost Estimation
+
+### Cloud Provider Costs (Monthly)
+
+| Provider | Instance Type | Cost (USD) |
+|----------|---------------|------------|
+| **AWS** | t3.medium | ~$30 |
+| **GCP** | e2-standard-2 | ~$25 |
+| **Azure** | Standard_D2s_v3 | ~$35 |
+| **DigitalOcean** | 4GB Droplet | ~$24 |
+| **Hetzner** | CX21 | ~$5 |
+
+<Note type="info" title="Cost Optimization">
+- Use spot/preemptible instances for non-critical workloads
+- Consider reserved instances for long-term deployments
+- Monitor and right-size based on actual usage
+</Note>
+
+## Next Steps
+
+<StepCards>
+  <StepCard
+    step="1"
+    title="Choose Deployment"
+    description="Docker for simplicity, Kubernetes for scale"
+    href="/self-hosting/docker"
+  />
+  <StepCard
+    step="2"
+    title="Configure"
+    description="Set up environment and secrets"
+    href="/configuration/overview"
+  />
+</StepCards>
+
+After deploying and configuring AeonSage, consider setting up monitoring and observability to track system health, performance metrics, and usage patterns in your production environment.

@@ -1,0 +1,184 @@
+---
+title: "Desktop Installation"
+description: "Install AeonSage Desktop on your platform."
+---
+
+Install the AeonSage Desktop application on macOS, Windows, or Linux.
+
+## System Requirements
+
+| Requirement | Minimum | Recommended |
+|-------------|---------|-------------|
+| **OS** | macOS 12+, Windows 10+, Ubuntu 20.04+ | Latest stable |
+| **RAM** | 4 GB | 8+ GB |
+| **Storage** | 500 MB | 10+ GB (for local models) |
+| **CPU** | 2 cores | 4+ cores |
+
+## Download
+
+<Tabs>
+  <Tab title="macOS">
+    
+    <DownloadButtons>
+      <DownloadButton platform="apple-silicon" text="Download for Apple Silicon" url="https://aeonsage.org/download/mac-arm64" />
+      <DownloadButton platform="intel" text="Download for Intel" url="https://aeonsage.org/download/mac-x64" />
+    </DownloadButtons>
+    
+    ### Installation Steps
+    
+    1. Download the `.dmg` file for your architecture
+    2. Open the DMG file
+    3. Drag **AeonSage** to **Applications**
+    4. Launch from Applications folder
+    
+    <Note type="warning" title="First Launch">
+    On first launch, you may see a security prompt:
+    1. Open **System Settings → Privacy & Security**
+    2. Click **Open Anyway** next to the security warning
+    </Note>
+    
+  </Tab>
+  
+  <Tab title="Windows">
+    
+    <DownloadButtons>
+      <DownloadButton platform="windows" text="Download for Windows" url="https://aeonsage.org/download/windows" />
+    </DownloadButtons>
+    
+    ### Installation Steps
+    
+    1. Download the `.msi` installer
+    2. Run the installer
+    3. Follow the setup wizard
+    4. Launch from Start Menu
+    
+    <Note type="warning" title="SmartScreen">
+    Windows may show a SmartScreen warning. Click **More info** → **Run anyway**.
+    </Note>
+    
+  </Tab>
+  
+  <Tab title="Linux">
+    
+    ### Debian/Ubuntu
+    
+    ```bash
+    wget https://aeonsage.org/download/aeonsage_latest_amd64.deb
+    sudo dpkg -i aeonsage_latest_amd64.deb
+    sudo apt-get install -f  # Fix dependencies
+    ```
+    
+    ### RHEL/Fedora
+    
+    ```bash
+    wget https://aeonsage.org/download/aeonsage_latest_x86_64.rpm
+    sudo rpm -i aeonsage_latest_x86_64.rpm
+    ```
+    
+    ### AppImage
+    
+    ```bash
+    wget https://aeonsage.org/download/AeonSage-latest-x86_64.AppImage
+    chmod +x AeonSage-latest-x86_64.AppImage
+    ./AeonSage-latest-x86_64.AppImage
+    ```
+    
+  </Tab>
+</Tabs>
+
+## First-Time Setup
+
+<Steps>
+  <Step>
+    **Launch AeonSage**
+    
+    Open the application from your applications folder or start menu.
+  </Step>
+  
+  <Step>
+    **Configure AI Provider**
+    
+    On first launch, you'll be prompted to configure an AI provider:
+    
+    - **OpenAI**: Enter your API key
+    - **Anthropic**: Enter your API key
+    - **Ollama**: Install and run Ollama locally
+    
+  </Step>
+  
+  <Step>
+    **Start Chatting**
+    
+    Type a message in the chat interface to start using AeonSage.
+  </Step>
+</Steps>
+
+## Features
+
+### Built-in Gateway
+
+The Desktop app includes a built-in Gateway server. No separate installation needed.
+
+- Runs automatically when the app starts
+- Accessible from the app's control panel
+- Can be accessed from other devices on your network
+
+### System Integration
+
+- **System tray/menu bar**: Quick access to status and controls
+- **Notifications**: Get notified of messages and events
+- **Global shortcuts**: Configure keyboard shortcuts for quick actions
+- **Auto-start**: Optionally launch on system startup
+
+### Offline Support
+
+With Ollama configured, AeonSage works completely offline:
+- No internet required
+- All processing happens locally
+- Your data never leaves your device
+
+## Updates
+
+### Automatic Updates
+
+The app checks for updates automatically. When an update is available:
+1. You'll see a notification
+2. Click to download and install
+3. Restart to complete the update
+
+### Manual Check
+
+1. Open **Settings → About**
+2. Click **Check for Updates**
+
+## Uninstall
+
+### macOS
+
+```bash
+rm -rf /Applications/AeonSage.app
+rm -rf ~/.aeonsage  # Optional: remove configuration
+```
+
+### Windows
+
+Use **Add or Remove Programs** to uninstall AeonSage.
+
+### Linux
+
+```bash
+# Debian/Ubuntu
+sudo dpkg --remove aeonsage
+
+# RHEL/Fedora
+sudo rpm --erase aeonsage
+
+# AppImage
+rm AeonSage-*.AppImage
+```
+
+---
+
+## Next Steps
+
+Congratulations! AeonSage Desktop is now installed. To get the most out of the application, familiarize yourself with the desktop interface features including the chat window, settings panel, and system tray controls. For complete privacy and offline functionality, consider setting up local AI models using Ollama, which allows all processing to happen on your device without requiring internet connectivity.

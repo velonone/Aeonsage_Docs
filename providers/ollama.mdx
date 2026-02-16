@@ -1,0 +1,325 @@
+---
+title: "Ollama (Local Models)"
+description: "Run AI models locally with Ollama for complete privacy."
+---
+
+Run AI models entirely on your hardware with Ollama. No data leaves your device.
+
+## Why Ollama?
+
+<FeatureCardGroup>
+  <FeatureCard
+    title="Privacy"
+    icon="lock"
+    description="100% local processing. Your prompts never leave your machine."
+  />
+  <FeatureCard
+    title="Free"
+    icon="dollar-sign"
+    description="No API costs. Run unlimited queries on your hardware."
+  />
+  <FeatureCard
+    title="Offline"
+    icon="wifi-slash"
+    description="Works without internet connection."
+  />
+  <FeatureCard
+    title="Flexible"
+    icon="sliders"
+    description="Choose from dozens of open-source models."
+  />
+</FeatureCardGroup>
+
+## Installation
+
+<Tabs>
+  <Tab title="macOS">
+    
+    ```bash
+    # Download from ollama.ai
+    curl -fsSL https://ollama.ai/install.sh | sh
+    
+    # Or use Homebrew
+    brew install ollama
+    ```
+    
+  </Tab>
+  <Tab title="Linux">
+    
+    ```bash
+    curl -fsSL https://ollama.ai/install.sh | sh
+    ```
+    
+  </Tab>
+  <Tab title="Windows">
+    
+    Download the installer from [ollama.ai](https://ollama.ai)
+    
+  </Tab>
+</Tabs>
+
+## Quick Start
+
+<Steps>
+  <Step>
+    **Start Ollama**
+    
+    ```bash
+    ollama serve
+    ```
+    
+    Ollama runs on `http://localhost:11434` by default.
+  </Step>
+  
+  <Step>
+    **Pull a Model**
+    
+    ```bash
+    # Recommended for most users
+    ollama pull llama3.2
+    
+    # For coding tasks
+    ollama pull codellama
+    
+    # For fast responses
+    ollama pull phi3
+    ```
+    
+  </Step>
+  
+  <Step>
+    **Configure AeonSage**
+    
+    AeonSage auto-detects Ollama. No additional configuration needed!
+    
+    Or specify explicitly:
+    ```json
+    {
+      "providers": {
+        "ollama": {
+          "baseUrl": "http://localhost:11434"
+        }
+      },
+      "llm": {
+        "defaultProvider": "ollama",
+        "defaultModel": "llama3.2"
+      }
+    }
+    ```
+    
+  </Step>
+  
+  <Step>
+    **Start Using**
+    
+    ```bash
+    aeonsage gateway start
+    ```
+    
+    Messages will now use your local Ollama model.
+  </Step>
+</Steps>
+
+## Available Models
+
+### Recommended Models
+
+| Model | Size | RAM | Use Case |
+|-------|------|-----|----------|
+| **llama3.2** | 2-3GB | 8GB | General purpose, best balance |
+| **llama3.2:1b** | 1.3GB | 4GB | Fast, lightweight |
+| **llama3.1:8b** | 4.7GB | 8GB | High quality, general purpose |
+| **codellama** | 3.8GB | 8GB | Code generation |
+| **mistral** | 4.1GB | 8GB | Efficient, multilingual |
+| **qwen2.5** | 4.7GB | 8GB | Strong reasoning |
+| **phi3** | 2.3GB | 6GB | Fast, efficient |
+
+### Browse All Models
+
+```bash
+# List installed models
+ollama list
+
+# Search for models
+ollama search llama
+
+# Pull specific version
+ollama pull llama3.2:3b
+```
+
+See [ollama.ai/library](https://ollama.ai/library) for all available models.
+
+## Hardware Requirements
+
+| Model Size | Minimum RAM | Recommended RAM |
+|------------|-------------|-----------------|
+| 1-3B | 4GB | 8GB |
+| 7-8B | 8GB | 16GB |
+| 13-14B | 16GB | 32GB |
+| 30B+ | 32GB | 64GB+ |
+
+<Note type="info" title="GPU Acceleration">
+Ollama automatically uses GPU if available (NVIDIA, AMD, Apple Silicon). This significantly improves speed.
+</Note>
+
+## Configuration Options
+
+### Basic Configuration
+
+```json
+{
+  "providers": {
+    "ollama": {
+      "baseUrl": "http://localhost:11434",
+      "timeout": 120000,
+      "keepAlive": "5m"
+    }
+  }
+}
+```
+
+### Model Parameters
+
+```json
+{
+  "providers": {
+    "ollama": {
+      "modelOptions": {
+        "temperature": 0.7,
+        "top_p": 0.9,
+        "num_ctx": 4096,
+        "num_predict": 2048
+      }
+    }
+  }
+}
+```
+
+### Remote Ollama
+
+Connect to Ollama on a different machine:
+
+```json
+{
+  "providers": {
+    "ollama": {
+      "baseUrl": "http://192.168.1.100:11434"
+    }
+  }
+}
+```
+
+<Note type="warning" title="Network Security">
+When exposing Ollama over network, ensure proper firewall rules. Ollama has no built-in authentication.
+</Note>
+
+## Performance Tuning
+
+### Context Length
+
+Adjust context window for your needs:
+
+```bash
+# Default is 2048 tokens
+ollama run llama3.2 --num-ctx 4096
+```
+
+Or in configuration:
+
+```json
+{
+  "providers": {
+    "ollama": {
+      "modelOptions": {
+        "num_ctx": 8192
+      }
+    }
+  }
+}
+```
+
+### Parallel Requests
+
+Ollama handles one request at a time by default. For concurrent requests:
+
+```bash
+OLLAMA_NUM_PARALLEL=4 ollama serve
+```
+
+### GPU Layers
+
+Control how many layers run on GPU:
+
+```bash
+OLLAMA_NUM_GPU=40 ollama run llama3.2
+```
+
+## Troubleshooting
+
+<Accordion>
+  <AccordionItem title="Ollama not detected">
+    
+    **Check:**
+    
+    1. Ollama is running: `ollama list`
+    2. Port is accessible: `curl http://localhost:11434/api/tags`
+    3. AeonSage logs: `aeonsage logs`
+    
+    **Fix:**
+    ```bash
+    # Start Ollama
+    ollama serve
+    
+    # Or specify URL
+    aeonsage config set providers.ollama.baseUrl http://localhost:11434
+    ```
+    
+  </AccordionItem>
+  
+  <AccordionItem title="Model not found">
+    
+    **Pull the model first:**
+    ```bash
+    ollama pull llama3.2
+    ```
+    
+    **Check installed models:**
+    ```bash
+    ollama list
+    ```
+    
+  </AccordionItem>
+  
+  <AccordionItem title="Slow responses">
+    
+    **Possible causes:**
+    
+    - **CPU inference**: Running on CPU instead of GPU
+    - **Memory pressure**: Not enough RAM, causing swapping
+    - **Large model**: Model is too big for your hardware
+    
+    **Solutions:**
+    
+    - Use a smaller model: `ollama pull llama3.2:1b`
+    - Check GPU is being used: `nvidia-smi` (NVIDIA)
+    - Reduce context: `--num-ctx 2048`
+    
+  </AccordionItem>
+  
+  <AccordionItem title="Out of memory errors">
+    
+    **Solutions:**
+    
+    1. Use smaller model
+    2. Reduce context length
+    3. Close other applications
+    4. Use quantized model (default in Ollama)
+    
+  </AccordionItem>
+</Accordion>
+
+---
+
+## Next Steps
+
+You now have Ollama configured for local AI processing. In addition to local models, AeonSage supports cloud AI providers like OpenAI and Anthropic for different use cases. Explore the providers documentation to see all supported models and their capabilities, including specialized models for coding, reasoning, and multilingual tasks.

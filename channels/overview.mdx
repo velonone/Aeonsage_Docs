@@ -1,0 +1,357 @@
+---
+title: "Channels Overview"
+description: "Connect AeonSage to 27+ messaging platforms."
+---
+
+<div className="intro">
+Channels are the bridge between AeonSage and the world. Each channel plugin enables your agent to communicate through a specific platform, from Telegram to Discord, WhatsApp to Slack.
+</div>
+
+---
+
+## Channel Statistics
+
+<StatsGrid cols={4}>
+  <StatCard value="27+" label="Total Channels" trend="+5 this year" />
+  <StatCard value="15" label="Built-in" trend="Core" />
+  <StatCard value="12" label="Extensions" trend="Growing" />
+  <StatCard value="99.9%" label="Uptime" trend="SLA" />
+</StatsGrid>
+
+---
+
+## Channel Categories
+
+### Distribution by Type
+
+<DonutChart 
+  title="Channel Distribution"
+  data={[
+    { label: "Messaging", value: 12, color: "#3b82f6" },
+    { label: "Collaboration", value: 5, color: "#8b5cf6" },
+    { label: "Social Media", value: 4, color: "#ec4899" },
+    { label: "Voice/Video", value: 3, color: "#f59e0b" },
+    { label: "Extensions", value: 3, color: "#10b981" },
+  ]}
+/>
+
+### Feature Coverage Matrix
+
+<FeatureMatrix>
+  <Channel name="Telegram" text={true} media={true} voice={true} groups={true} threads={true} />
+  <Channel name="Discord" text={true} media={true} voice={true} groups={true} threads={true} />
+  <Channel name="WhatsApp" text={true} media={true} voice={true} groups={true} threads={false} />
+  <Channel name="Signal" text={true} media={true} voice={true} groups={true} threads={false} />
+  <Channel name="iMessage" text={true} media={true} voice={false} groups={true} threads={false} />
+  <Channel name="Slack" text={true} media={true} voice={true} groups={true} threads={true} />
+  <Channel name="MS Teams" text={true} media={true} voice={true} groups={true} threads={true} />
+</FeatureMatrix>
+
+---
+
+## Supported Channels
+
+### Built-in Channels (Core)
+
+<ChannelGrid>
+  <ChannelCard 
+    name="Telegram" 
+    status="stable" 
+    features={["Bot API", "Groups", "Media", "Files", "Voice"]}
+    setupTime="5 min"
+  />
+  <ChannelCard 
+    name="Discord" 
+    status="stable" 
+    features={["Bot", "Guilds", "DMs", "Voice", "Threads"]}
+    setupTime="10 min"
+  />
+  <ChannelCard 
+    name="WhatsApp" 
+    status="stable" 
+    features={["Web API", "Business API", "Media", "Voice"]}
+    setupTime="15 min"
+  />
+  <ChannelCard 
+    name="Signal" 
+    status="stable" 
+    features={["Private Messaging", "Groups", "Media"]}
+    setupTime="10 min"
+  />
+  <ChannelCard 
+    name="iMessage" 
+    status="stable" 
+    features={["BlueBubbles", "Mac Integration", "Media"]}
+    setupTime="20 min"
+  />
+  <ChannelCard 
+    name="Slack" 
+    status="stable" 
+    features={["Workspaces", "Channels", "Threads", "Files"]}
+    setupTime="15 min"
+  />
+</ChannelGrid>
+
+### Extension Channels
+
+<ExtensionChannelGrid>
+  <ExtensionCard 
+    name="Microsoft Teams" 
+    package="@aeonsage/plugin-msteams"
+    status="stable"
+  />
+  <ExtensionCard 
+    name="Matrix" 
+    package="@aeonsage/plugin-matrix"
+    status="stable"
+  />
+  <ExtensionCard 
+    name="Zalo" 
+    package="@aeonsage/plugin-zalo"
+    status="beta"
+  />
+  <ExtensionCard 
+    name="Twitter/X DMs" 
+    package="@aeonsage/plugin-twitter"
+    status="beta"
+  />
+  <ExtensionCard 
+    name="Voice Calls" 
+    package="@aeonsage/plugin-voice-call"
+    status="stable"
+  />
+</ExtensionChannelGrid>
+
+---
+
+## Channel Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                     Channel Plugin System                        │
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────┐   │
+│  │                   Channel Adapter                        │   │
+│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │   │
+│  │  │  Receive    │  │   Format    │  │   Send      │     │   │
+│  │  │  Message    │──│  Translate  │──│  Message    │     │   │
+│  │  └─────────────┘  └─────────────┘  └─────────────┘     │   │
+│  └─────────────────────────────────────────────────────────┘   │
+│                              │                                  │
+│  ┌───────────────────────────▼───────────────────────────────┐ │
+│  │              Unified Message Format                        │ │
+│  │  {                                                         │ │
+│  │    channel: "telegram",                                    │ │
+│  │    sender: { id, name, ... },                              │ │
+│  │    content: { text, media, location, ... },                │ │
+│  │    metadata: { replyTo, thread, ... }                      │ │
+│  │  }                                                         │ │
+│  └───────────────────────────────────────────────────────────┘ │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Setup Time Comparison
+
+<BarChart 
+  title="Channel Setup Time (minutes)"
+  data={[
+    { label: "Telegram", value: 5, color: "#22c55e" },
+    { label: "Discord", value: 10, color: "#5865f2" },
+    { label: "Signal", value: 10, color: "#3b82f6" },
+    { label: "WhatsApp", value: 15, color: "#25d366" },
+    { label: "Slack", value: 15, color: "#4a154b" },
+    { label: "iMessage", value: 20, color: "#34c759" },
+  ]}
+  xAxis="Minutes"
+/>
+
+---
+
+## Message Flow
+
+### Inbound Processing
+
+<FlowDiagram>
+  <Node name="Webhook/Poll" position="start" />
+  <Arrow />
+  <Node name="Parse" />
+  <Arrow />
+  <Node name="Normalize" />
+  <Arrow />
+  <Node name="Allowlist Check" />
+  <Arrow />
+  <Node name="Route" />
+  <Arrow />
+  <Node name="Process" position="end" />
+</FlowDiagram>
+
+### Processing Time by Stage
+
+<StackedBarChart
+  title="Inbound Message Processing Time"
+  data={[
+    { stage: "Receive", time: 3, color: "#3b82f6" },
+    { stage: "Parse", time: 2, color: "#8b5cf6" },
+    { stage: "Normalize", time: 1, color: "#ec4899" },
+    { stage: "Allowlist", time: 1, color: "#f59e0b" },
+    { stage: "Route", time: 2, color: "#10b981" },
+  ]}
+  total="9ms avg"
+/>
+
+---
+
+## Allowlist System
+
+### Access Control Modes
+
+<AccessControlTable>
+  <thead>
+    <tr>
+      <th>Mode</th>
+      <th>Behavior</th>
+      <th>Use Case</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>open</code></td>
+      <td>Anyone can interact</td>
+      <td>Public demos, testing</td>
+    </tr>
+    <tr>
+      <td><code>allowlist</code></td>
+      <td>Only listed users/groups</td>
+      <td>Private deployments</td>
+    </tr>
+    <tr>
+      <td><code>admin</code></td>
+      <td>Only admin users</td>
+      <td>Secure environments</td>
+    </tr>
+  </tbody>
+</AccessControlTable>
+
+### Allowlist Management
+
+```bash
+# Add user to allowlist
+aeonsage channels allow add telegram user:123456789
+
+# Add group to allowlist
+aeonsage channels allow add discord group:987654321
+
+# List allowlist entries
+aeonsage channels allow list telegram
+
+# Remove from allowlist
+aeonsage channels allow remove telegram user:123456789
+```
+
+---
+
+## Media Support
+
+### Media Type Support Matrix
+
+<MediaSupportMatrix>
+  <MediaRow media="Images" telegram="Y" discord="Y" whatsapp="Y" signal="Y" slack="Y" />
+  <MediaRow media="Audio" telegram="Y" discord="Y" whatsapp="Y" signal="Y" slack="Y" />
+  <MediaRow media="Video" telegram="Y" discord="Y" whatsapp="Y" signal="Y" slack="Y" />
+  <MediaRow media="Documents" telegram="Y" discord="Y" whatsapp="Y" signal="Y" slack="Y" />
+  <MediaRow media="Voice Notes" telegram="Y" discord="Y" whatsapp="Y" signal="Y" slack="N" />
+  <MediaRow media="Location" telegram="Y" discord="N" whatsapp="Y" signal="N" slack="N" />
+  <MediaRow media="Stickers" telegram="Y" discord="Y" whatsapp="N" signal="N" slack="Y" />
+</MediaSupportMatrix>
+
+### Media Size Limits
+
+<MediaLimitsChart>
+  <Limit platform="Telegram" images="10MB" video="50MB" audio="50MB" docs="50MB" />
+  <Limit platform="Discord" images="25MB" video="500MB" audio="500MB" docs="500MB" />
+  <Limit platform="WhatsApp" images="16MB" video="64MB" audio="64MB" docs="100MB" />
+  <Limit platform="Slack" images="1GB" video="1GB" audio="1GB" docs="1GB" />
+</MediaLimitsChart>
+
+---
+
+## Channel Setup Guides
+
+<CardGroup>
+  <Card title="Telegram Setup" icon="send" href="/channels/telegram">
+    <p>Connect via Bot API with webhook support.</p>
+    <p><strong>Setup time:</strong> 5 minutes</p>
+  </Card>
+</CardGroup>
+
+---
+
+## Troubleshooting
+
+### Common Issues and Solutions
+
+<TroubleshootAccordion>
+  <Issue name="Channel not receiving messages">
+    <DiagnosticSteps>
+      <Step>Verify webhook URL is accessible from internet</Step>
+      <Step>Check channel credentials are correct</Step>
+      <Step>Ensure channel is enabled in configuration</Step>
+      <Step>Review gateway logs for errors</Step>
+    </DiagnosticSteps>
+    <Solution>
+      <code>aeonsage channels status --probe</code>
+    </Solution>
+  </Issue>
+  
+  <Issue name="Messages not sending">
+    <DiagnosticSteps>
+      <Step>Check API rate limits for the channel</Step>
+      <Step>Verify bot has necessary permissions</Step>
+      <Step>Check gateway logs for error details</Step>
+    </DiagnosticSteps>
+  </Issue>
+  
+  <Issue name="Allowlist blocking authorized users">
+    <DiagnosticSteps>
+      <Step>Verify user ID format matches channel expectations</Step>
+      <Step>Check if group vs user allowlist is correct</Step>
+      <Step>Use debug command to test</Step>
+    </DiagnosticSteps>
+    <Solution>
+      <code>aeonsage channels allow list telegram --verbose</code>
+    </Solution>
+  </Issue>
+</TroubleshootAccordion>
+
+---
+
+## Debug Commands
+
+```bash
+# Check channel status
+aeonsage channels status
+
+# Probe channel connectivity
+aeonsage channels status --probe
+
+# View channel logs
+aeonsage logs --channel telegram
+
+# Test message sending
+aeonsage message send telegram:@user "Test message"
+```
+
+---
+
+## Next Steps
+
+<CardGroup>
+  <Card title="Setup Telegram" icon="send" href="/channels/telegram">
+    <p>Connect your first Telegram bot in 5 minutes.</p>
+  </Card>
+</CardGroup>
+
+After setting up your channel, configure AI model providers to power your conversations. See the concepts documentation for information on connecting OpenAI, Anthropic, or local models via Ollama.

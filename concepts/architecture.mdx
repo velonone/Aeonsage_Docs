@@ -1,0 +1,451 @@
+---
+title: "Architecture"
+description: "Understanding the AeonSage platform architecture."
+---
+
+<div className="intro">
+AeonSage is built on a modular, event-driven architecture designed for sovereignty, scalability, and seamless integration.
+</div>
+
+---
+
+## Core Philosophy
+
+<PhilosophyGrid>
+  <PhilosophyCard icon="shield" title="Sovereignty">
+    <p>Everything runs on your infrastructure. Your data never leaves your control.</p>
+  </PhilosophyCard>
+  
+  <PhilosophyCard icon="puzzle" title="Modularity">
+    <p>Each component is independently deployable and replaceable.</p>
+  </PhilosophyCard>
+  
+  <PhilosophyCard icon="zap" title="Performance">
+    <p>Rust-accelerated core with intelligent caching for sub-100ms response times.</p>
+  </PhilosophyCard>
+  
+  <PhilosophyCard icon="lock" title="Security">
+    <p>Zero-trust architecture with end-to-end encryption for all communications.</p>
+  </PhilosophyCard>
+</PhilosophyGrid>
+
+---
+
+## System Overview
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                           AeonSage Platform                              │
+│                                                                          │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                     Frontend Layer                               │   │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │   │
+│  │  │  Control UI  │  │ Desktop App  │  │  Web PWA     │          │   │
+│  │  │  (Lit + Vite)│  │ (Tauri + React)│  │(React+Three)│          │   │
+│  │  └──────────────┘  └──────────────┘  └──────────────┘          │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                    │                                     │
+│                                    ▼                                     │
+│  ┌─────────────────────────────────────────────────────────────────┐   │
+│  │                     Gateway Layer                                │   │
+│  │  ┌──────────────────────────────────────────────────────────┐   │   │
+│  │  │                    AeonSage Gateway                       │   │   │
+│  │  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐      │   │   │
+│  │  │  │   Router    │  │   Session   │  │   Plugin    │      │   │   │
+│  │  │  │   Engine    │  │   Manager   │  │   Loader    │      │   │   │
+│  │  │  └─────────────┘  └─────────────┘  └─────────────┘      │   │   │
+│  │  └──────────────────────────────────────────────────────────┘   │   │
+│  └─────────────────────────────────────────────────────────────────┘   │
+│                                    │                                     │
+│          ┌─────────────────────────┼─────────────────────────┐          │
+│          ▼                         ▼                         ▼          │
+│  ┌─────────────┐          ┌─────────────┐          ┌─────────────┐    │
+│  │   AI Layer  │          │ Channel Layer│         │  Tool Layer │    │
+│  │             │          │             │          │             │    │
+│  │ ┌─────────┐ │          │ ┌─────────┐ │          │ ┌─────────┐ │    │
+│  │ │ OpenAI  │ │          │ │Telegram │ │          │ │   Web   │ │    │
+│  │ │Anthropic│ │          │ │ Discord │ │          │ │  Shell  │ │    │
+│  │ │ Ollama  │ │          │ │WhatsApp │ │          │ │  Files  │ │    │
+│  │ │  ...    │ │          │ │  ...    │ │          │ │  ...    │ │    │
+│  │ └─────────┘ │          │ └─────────┘ │          │ └─────────┘ │    │
+│  └─────────────┘          └─────────────┘          └─────────────┘    │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Component Analysis
+
+### Frontend Layer Distribution
+
+<DonutChart 
+  title="Frontend Technology Stack"
+  data={[
+    { label: "React 19", value: 45, color: "#61dafb" },
+    { label: "TypeScript", value: 30, color: "#3178c6" },
+    { label: "Lit", value: 10, color: "#325ccc" },
+    { label: "Tauri/Rust", value: 10, color: "#dea584" },
+    { label: "Three.js", value: 5, color: "#000000" },
+  ]}
+/>
+
+### Gateway Resource Allocation
+
+<BarChart 
+  title="Gateway Memory Usage by Component"
+  data={[
+    { label: "Router Engine", value: 35, color: "#6366f1" },
+    { label: "Session Manager", value: 45, color: "#8b5cf6" },
+    { label: "Plugin Loader", value: 20, color: "#a78bfa" },
+    { label: "API Server", value: 15, color: "#c4b5fd" },
+    { label: "Metrics", value: 10, color: "#ddd6fe" },
+  ]}
+  xAxis="Memory (MB)"
+/>
+
+---
+
+## Component Layers
+
+### 1. Frontend Layer
+
+<Table>
+  <thead>
+    <tr>
+      <th>Application</th>
+      <th>Technology</th>
+      <th>Bundle Size</th>
+      <th>Use Case</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Control UI</strong></td>
+      <td>Lit + Vite + TypeScript</td>
+      <td>~150KB</td>
+      <td>Browser-based admin dashboard</td>
+    </tr>
+    <tr>
+      <td><strong>Desktop App</strong></td>
+      <td>Tauri v2 + React 19</td>
+      <td>~25MB</td>
+      <td>Native desktop experience</td>
+    </tr>
+    <tr>
+      <td><strong>Web PWA</strong></td>
+      <td>React 19 + Three.js</td>
+      <td>~500KB</td>
+      <td>Marketing site + web app</td>
+    </tr>
+  </tbody>
+</Table>
+
+### 2. Gateway Layer
+
+The Gateway is the heart of AeonSage — a single binary that orchestrates all operations.
+
+<GatewayMetrics>
+  <MetricCard label="Startup Time" value="< 2s" target="< 5s" />
+  <MetricCard label="Memory Baseline" value="~200MB" target="< 500MB" />
+  <MetricCard label="Request Throughput" value="10K/s" target="5K/s" />
+  <MetricCard label="Latency P99" value="< 100ms" target="< 500ms" />
+</GatewayMetrics>
+
+<GatewayFeatures>
+  <Feature name="Router Engine">
+    <p>Intelligent message routing across channels with priority queuing and retry logic.</p>
+    <Badge>Event-driven</Badge>
+    <Badge>Type-safe</Badge>
+  </Feature>
+  
+  <Feature name="Session Manager">
+    <p>Maintains conversation context, memory, and state across all interactions.</p>
+    <Badge>Persistent</Badge>
+    <Badge>Distributed-ready</Badge>
+  </Feature>
+  
+  <Feature name="Plugin Loader">
+    <p>Dynamic loading of channel plugins, AI providers, and skill extensions.</p>
+    <Badge>Hot-reload</Badge>
+    <Badge>Sandboxed</Badge>
+  </Feature>
+</GatewayFeatures>
+
+### 3. AI Layer
+
+<AIProviderComparison>
+  <ProviderColumn name="Cloud">
+    <Provider name="OpenAI" latency="120ms" cost="$$$" />
+    <Provider name="Anthropic" latency="100ms" cost="$$$" />
+    <Provider name="Google" latency="150ms" cost="$$" />
+    <Provider name="Mistral" latency="130ms" cost="$$" />
+  </ProviderColumn>
+  
+  <ProviderColumn name="Local">
+    <Provider name="Ollama" latency="80ms" cost="Free" />
+    <Provider name="LM Studio" latency="85ms" cost="Free" />
+    <Provider name="vLLM" latency="60ms" cost="Free" />
+  </ProviderColumn>
+  
+  <ProviderColumn name="Aggregators">
+    <Provider name="OpenRouter" latency="140ms" cost="Variable" />
+    <Provider name="Together AI" latency="110ms" cost="$$" />
+  </ProviderColumn>
+</AIProviderComparison>
+
+### 4. Channel Layer
+
+<ChannelStatistics>
+  <StatGroup title="By Category">
+    <StatItem label="Messaging" value={12} color="#3b82f6" />
+    <StatItem label="Collaboration" value={5} color="#8b5cf6" />
+    <StatItem label="Social" value={4} color="#ec4899" />
+    <StatItem label="Voice" value={3} color="#f59e0b" />
+    <StatItem label="Extensions" value={3} color="#10b981" />
+  </StatGroup>
+  
+  <StatGroup title="By Status">
+    <StatItem label="Stable" value={20} color="#22c55e" />
+    <StatItem label="Beta" value={5} color="#eab308" />
+    <StatItem label="Alpha" value={2} color="#f97316" />
+  </StatGroup>
+</ChannelStatistics>
+
+---
+
+## Data Flow
+
+### Message Processing Pipeline
+
+```
+User Message
+     │
+     ▼
+┌─────────────┐
+│   Channel   │  ← Webhook/Polling
+│   Adapter   │
+└─────────────┘
+     │
+     ▼
+┌─────────────┐
+│   Router    │  ← Allowlist Check, Routing Logic
+│   Engine    │
+└─────────────┘
+     │
+     ▼
+┌─────────────┐
+│   Session   │  ← Context, Memory, History
+│   Manager   │
+└─────────────┘
+     │
+     ▼
+┌─────────────┐
+│     AI      │  ← Provider Selection, Streaming
+│   Provider  │
+└─────────────┘
+     │
+     ▼
+┌─────────────┐
+│   Skill     │  ← Tool Calls, Actions
+│   Executor  │
+└─────────────┘
+     │
+     ▼
+┌─────────────┐
+│   Response  │  ← Formatting, Media Attachments
+│   Builder   │
+└─────────────┘
+     │
+     ▼
+  Response
+```
+
+### Processing Time Distribution
+
+<StackedBarChart
+  title="Message Processing Time Breakdown"
+  data={[
+    { stage: "Channel Adapter", time: 5, color: "#3b82f6" },
+    { stage: "Router", time: 2, color: "#8b5cf6" },
+    { stage: "Session", time: 3, color: "#ec4899" },
+    { stage: "AI Provider", time: 85, color: "#f59e0b" },
+    { stage: "Skills", time: 10, color: "#10b981" },
+    { stage: "Response", time: 5, color: "#6366f1" },
+  ]}
+  total="110ms avg"
+/>
+
+---
+
+## Deployment Modes
+
+<Tabs>
+  <Tab title="Local (OSS)">
+    <DeploymentCard>
+      <h4>Single-user, local deployment</h4>
+      <ul>
+        <li>SQLite database</li>
+        <li>Single gateway process</li>
+        <li>Desktop app or CLI</li>
+        <li>Local models via Ollama</li>
+      </ul>
+      <CodeBlock>
+        aeonsage gateway start --mode local
+      </CodeBlock>
+    </DeploymentCard>
+  </Tab>
+  
+  <Tab title="Self-Hosted (SaaS)">
+    <DeploymentCard>
+      <h4>Multi-tenant, self-hosted</h4>
+      <ul>
+        <li>PostgreSQL database</li>
+        <li>OAuth authentication</li>
+        <li>Horizontal scaling</li>
+        <li>Multi-user support</li>
+      </ul>
+      <CodeBlock>
+        aeonsage gateway start --mode saas --db postgres
+      </CodeBlock>
+    </DeploymentCard>
+  </Tab>
+  
+  <Tab title="Enterprise">
+    <DeploymentCard>
+      <h4>Enterprise deployment</h4>
+      <ul>
+        <li>Kubernetes-ready</li>
+        <li>High availability</li>
+        <li>SSO integration</li>
+        <li>Custom SLAs</li>
+      </ul>
+      <CodeBlock>
+        kubectl apply -f deploy/kubernetes/
+      </CodeBlock>
+    </DeploymentCard>
+  </Tab>
+</Tabs>
+
+### Resource Requirements
+
+<ResourceMatrix>
+  <ResourceRow usage="Light (1-10 users)">
+    <Resource type="CPU" value="1 core" />
+    <Resource type="Memory" value="1GB" />
+    <Resource type="Storage" value="10GB" />
+    <Resource type="Network" value="1Mbps" />
+  </ResourceRow>
+  
+  <ResourceRow usage="Medium (10-100 users)">
+    <Resource type="CPU" value="2 cores" />
+    <Resource type="Memory" value="4GB" />
+    <Resource type="Storage" value="50GB" />
+    <Resource type="Network" value="10Mbps" />
+  </ResourceRow>
+  
+  <ResourceRow usage="Heavy (100-1000 users)">
+    <Resource type="CPU" value="4 cores" />
+    <Resource type="Memory" value="8GB" />
+    <Resource type="Storage" value="200GB" />
+    <Resource type="Network" value="100Mbps" />
+  </ResourceRow>
+  
+  <ResourceRow usage="Enterprise (1000+ users)">
+    <Resource type="CPU" value="8+ cores" />
+    <Resource type="Memory" value="16GB+" />
+    <Resource type="Storage" value="1TB+" />
+    <Resource type="Network" value="1Gbps" />
+  </ResourceRow>
+</ResourceMatrix>
+
+---
+
+## Technology Stack
+
+<StackDiagram>
+  <Layer name="Frontend">
+    <Techs techs={["TypeScript", "React 19", "Lit", "Tauri v2", "Vite"]} />
+  </Layer>
+  
+  <Layer name="Backend">
+    <Techs techs={["Node.js 22+", "Bun", "TypeScript", "Fastify"]} />
+  </Layer>
+  
+  <Layer name="Database">
+    <Techs techs={["PostgreSQL", "SQLite", "Redis (optional)"]} />
+  </Layer>
+  
+  <Layer name="Infrastructure">
+    <Techs techs={["Docker", "Kubernetes", "Fly.io", "Systemd"]} />
+  </Layer>
+</StackDiagram>
+
+### Technology Maturity
+
+<RadarChart
+  title="Technology Stack Maturity"
+  labels={["Stability", "Performance", "Security", "Scalability", "DX", "Community"]}
+  datasets={[
+    { label: "Frontend", data: [90, 85, 88, 80, 95, 90], color: "#61dafb" },
+    { label: "Backend", data: [92, 90, 90, 88, 90, 95], color: "#3178c6" },
+    { label: "Database", data: [95, 92, 92, 90, 85, 90], color: "#3b82f6" },
+    { label: "Infrastructure", data: [88, 90, 88, 95, 85, 88], color: "#6366f1" },
+  ]}
+/>
+
+---
+
+## Performance Characteristics
+
+<PerformanceGauge>
+  <Gauge label="Gateway Startup" value={95} target={100} unit="%" note="< 2s" />
+  <Gauge label="Message Latency" value={90} target={100} unit="%" note="< 100ms" />
+  <Gauge label="Throughput" value={85} target={100} unit="%" note="10K/s" />
+  <Gauge label="Memory Efficiency" value={88} target={100} unit="%" note="~200MB" />
+</PerformanceGauge>
+
+---
+
+## Security Architecture
+
+<div className="security-section">
+  <SecurityLayer name="Transport">
+    <p>HTTPS/WSS for all communications, certificate pinning available</p>
+  </SecurityLayer>
+  
+  <SecurityLayer name="Authentication">
+    <p>JWT tokens, OAuth 2.0, API keys, session-based auth</p>
+  </SecurityLayer>
+  
+  <SecurityLayer name="Authorization">
+    <p>Role-based access control (RBAC), channel allowlists</p>
+  </SecurityLayer>
+  
+  <SecurityLayer name="Data">
+    <p>Encryption at rest, key rotation, audit logging</p>
+  </SecurityLayer>
+</div>
+
+### Security Compliance Matrix
+
+<ComplianceMatrix>
+  <Row standard="SOC 2 Type II" transport="Y" auth="Y" data="Y" audit="Y" />
+  <Row standard="GDPR" transport="Y" auth="Y" data="Y" audit="Y" />
+  <Row standard="HIPAA" transport="Y" auth="Y" data="Y" audit="Y" />
+  <Row standard="ISO 27001" transport="Y" auth="Y" data="Y" audit="Y" />
+</ComplianceMatrix>
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Gateway Deep Dive" icon="server" href="/concepts/gateway">
+    <p>Learn about the Gateway's internal components</p>
+  </Card>
+  
+  <Card title="Channel Integration" icon="plug" href="/concepts/channels">
+    <p>Understand how channels connect and process messages</p>
+  </Card>
+</CardGroup>
